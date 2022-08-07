@@ -1,0 +1,5 @@
+const BASE_URL = "api";
+const CURRENT_VERSION = "v1";
+const SKIP_MIDDLEWARE = true;
+
+export { BASE_URL, CURRENT_VERSION, SKIP_MIDDLEWARE };

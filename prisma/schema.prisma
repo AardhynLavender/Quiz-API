@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum Role {
+  SUPER_USER
+  ADMIN_USER
+  BASIC_USER
+}
+
+model Institution {
+  id          Int          @id @default(autoincrement())
+  name        String
+  region      String
+  country     String
+  createdAt   DateTime     @default(now())
+  departments Department[]
+  userId      Int?
+  User        User?        @relation(fields: [userId], references: [id])
+}
+
+model Department {
+  id            Int         @id @default(autoincrement())
+  name          String
+  institutionId Int
+  createdAt     DateTime    @default(now())
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  userId        Int?
+  User          User?       @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  username     String        @unique
+  name         String
+  password     String
+  CreatedAt    DateTime      @default(now())
+  role         Role          @default(BASIC_USER)
+  instititions Institution[]
+  departments  Department[]
+}
