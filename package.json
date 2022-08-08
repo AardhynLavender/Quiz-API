@@ -1,5 +1,5 @@
 {
-  "name": "Restful API Assignment",
+  "name": "Restful-API-Assignment",
   "version": "1.0.0",
   "description": "A quiz application",
   "main": "app.js",
@@ -71,7 +71,8 @@
   },
   "lint-staged": {
     "*.{ts,js,json}": [
-      "npm run prettier:write"
+      "npm run prettier:write",
+      "eslint ."
     ]
   }
 }

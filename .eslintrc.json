@@ -11,7 +11,6 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": 2,
     "no-multiple-empty-lines": "warn",
     "no-multi-spaces": "warn",
     "no-trailing-spaces": "warn",
@@ -19,6 +18,12 @@
     "no-unused-vars": "warn",
     "no-extra-parens": 1,
     "semi": 1,
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
     "no-extra-semi": 1,
     "import/extensions": [
       "off",
