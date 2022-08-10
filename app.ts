@@ -37,12 +37,12 @@ import { SKIP_MIDDLEWARE } from "./api";
 import CreateRoute from "./routes/v1/route";
 
 import Authentication from "./routes/v1/auth";
-import institutions from "./routes/v1/institutions";
-import departments from "./routes/v1/departments";
+// import institutions from "./routes/v1/institutions";
+// import departments from "./routes/v1/departments";
 
 CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
-CreateRoute(app, institutions, "institutions");
-CreateRoute(app, departments, "departments");
+// CreateRoute(app, institutions, "institutions");
+// CreateRoute(app, departments, "departments");
 
 // ERROR CHECKS
 
@@ -51,20 +51,18 @@ import {
   Environment,
   EnvironmentVariable,
 } from "./util/environment";
-//
+
 (async () => {
   try {
     console.log("\nChecking local ENV...");
-
-    Array.from([
+    for (const variable of [
       "DATABASE_URL",
       "SHADOW_DATABASE_URL",
       "PORT",
       "JWT_SECRET",
       "JWT_LIFETIME",
-    ]).forEach((variable: EnvironmentVariable) => {
+    ] as EnvironmentVariable[])
       AssertEnvironmentVariable(variable);
-    });
 
     const PORT = Environment.PORT;
     app.listen(PORT, (): void => {
