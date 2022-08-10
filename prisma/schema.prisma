@@ -1,3 +1,5 @@
+// CONFIG //
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,41 +10,89 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+// ENUMERATIONS //
+
 enum Role {
   SUPER_USER
   ADMIN_USER
   BASIC_USER
 }
 
-model Institution {
-  id          Int          @id @default(autoincrement())
-  name        String
-  region      String
-  country     String
-  createdAt   DateTime     @default(now())
-  departments Department[]
-  userId      Int?
-  User        User?        @relation(fields: [userId], references: [id])
+// star rating
+enum Rating {
+  ONE
+  TWO
+  THREE
+  FOUR
+  FIVE
 }
 
-model Department {
-  id            Int         @id @default(autoincrement())
-  name          String
-  institutionId Int
-  createdAt     DateTime    @default(now())
-  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
-  userId        Int?
-  User          User?       @relation(fields: [userId], references: [id])
-}
+// MODELS //
 
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  username     String        @unique
-  name         String
-  password     String
-  CreatedAt    DateTime      @default(now())
-  role         Role          @default(BASIC_USER)
-  instititions Institution[]
-  departments  Department[]
+  id                  Int          @id @default(autoincrement())
+  first_name          String
+  last_name           String
+  username            String       @unique
+  profile_picture_uri String
+  email               String       @unique
+  password            String
+  role                Role         @default(BASIC_USER)
+  Submission          Submission[]
+  Outcome             Result[]
+}
+
+model Category {
+  name      String     @id
+  questions Question[]
+}
+
+model Difficulty {
+  name     String     @id @unique
+  score    Int
+  question Question[]
+}
+
+model Answer {
+  id          String   @id @default(cuid())
+  text        String   @unique
+  correct     Boolean
+  Question_id Int      @unique
+  Question    Question @relation(fields: [Question_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Question {
+  id              Int        @id
+  difficulty_type String
+  category_type   String
+  answers         Answer[]
+  difficulty      Difficulty @relation(fields: [difficulty_type], references: [name], onDelete: Cascade, onUpdate: Cascade)
+  category        Category   @relation(fields: [category_type], references: [name], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Quiz {
+  id          Int          @id
+  name        String       @unique
+  start_date  DateTime
+  end_date    DateTime
+  submissions Submission[]
+}
+
+model Result {
+  id             Int    @id @default(autoincrement())
+  quiz_id        Int    @unique
+  winner_id      Int
+  average_score  Float
+  average_rating Rating
+  winner         User   @relation(fields: [winner_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Submission {
+  id      Int    @id @default(autoincrement())
+  user_id Int    @unique
+  quiz_id Int    @unique
+  score   Int
+  rating  Rating
+  quiz    Quiz   @relation(fields: [quiz_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
