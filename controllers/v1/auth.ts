@@ -1,6 +1,7 @@
 import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import AssertValid from "../../util/assertion";
 
 import { Code } from "../../http/http";
 import { Environment } from "../../util/environment";
@@ -16,45 +17,82 @@ const Authorize = async (
       where: { id: typeof id === "string" ? Number(id) : id },
     });
     return !!user && elevation.includes(user.role);
-  } catch (err: any) {
+  } catch (err: unknown) {
     return false;
   }
 };
 
-const register = async (req: Request, res: Response) => {
-  try {
-    const { name, username, email, password, role }: User = req.body;
-    const user = await Prisma.user.findUnique({ where: { email } });
+const CreateProfilePictureURI = (hash: number) =>
+  `https://avatars.dicebear.com/api/human/${hash}.svg`;
 
+const coefficient = 5; // darn magic numbers again...
+const HashString = (string: string) => {
+  return Array.from(string).reduce((fullHash, _, index) => {
+    const charCode = string.charCodeAt(index);
+    const hash: number = (fullHash << coefficient) - fullHash + charCode;
+    return hash;
+  }, 0);
+};
+
+const CreateFakePassword = (min: number, max: number) =>
+  "*".repeat(Math.floor(Math.random() * (max - min + 1) + min));
+
+const Register = async (req: Request, res: Response) => {
+  try {
+    const { first_name, last_name, username, email, password }: User = req.body;
+    const user = await Prisma.user.findUnique({ where: { email } });
     if (user)
       return res.status(Code.CONFLICT).json({ msg: "User already exists" });
+
+    try {
+      AssertValid.FirstName(first_name);
+      AssertValid.LastName(last_name);
+      AssertValid.Username(username);
+      AssertValid.Email(email, username);
+      AssertValid.Password(password);
+    } catch (assertion: unknown) {
+      return res.status(Code.BAD_REQUEST).json({
+        msg: assertion,
+      });
+    }
 
     const salt = await bcryptjs.genSalt();
     const hashedPassword = await bcryptjs.hash(password, salt);
 
+    const userHash: number = HashString(email + username);
+    const profilePictureUri = CreateProfilePictureURI(userHash);
+
+    // Creation
+
     const newUser = await Prisma.user.create({
-      data: { name, username, email, password: hashedPassword, role },
+      data: {
+        first_name,
+        last_name,
+        username,
+        profile_picture_uri: profilePictureUri,
+        email,
+        password: hashedPassword,
+        role: Role.BASIC_USER, //
+      },
     });
 
     return res.status(Code.CREATED).json({
       msg: "User successfully registered",
-      data: { ...newUser, password: "*************" },
+      data: { ...newUser, password: CreateFakePassword(6, 12) },
     });
   } catch (err: any) {
     console.error(err);
     return res.status(Code.ERROR).json({
-      msg: err.message,
+      msg: err.message || err || "An error occurred",
     });
   }
 };
 
-const login = async (req: Request, res: Response) => {
+const Login = async (req: Request, res: Response) => {
   try {
-    const { email, username, password }: User = req.body;
-
-    const predicate = email ? { email } : { username };
+    const { email, password }: User = req.body;
     const user = await Prisma.user.findUnique({
-      where: { ...predicate },
+      where: { email },
     });
 
     if (!user)
@@ -72,7 +110,7 @@ const login = async (req: Request, res: Response) => {
     const token: string = jwt.sign(
       {
         id: user.id,
-        name: user.name,
+        name: user.username,
       },
       Environment.JWT_SECRET,
       { expiresIn: Environment.JWT_LIFETIME }
@@ -89,4 +127,4 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-export { Authorize, register, login };
+export { Authorize, Register, Login };
