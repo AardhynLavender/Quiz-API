@@ -15,6 +15,10 @@ const Regex: Record<string, RegExp> = {
 // eslint-disable-next-line no-unused-vars
 type Assertion = (value: string) => void;
 
+const AssertEquality = (field: string, value: string, confirmValue: string) => {
+  if (value !== confirmValue) throw `${field}s must be the same`;
+};
+
 const AssertLength = (
   value: string,
   field: string,
@@ -62,3 +66,4 @@ export const AssertValid = {
 };
 
 export default AssertValid;
+export { AssertEquality };
