@@ -42,6 +42,8 @@
     "node-cache": "^5.1.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
     "@prisma/client": "^4.1.1",
     "@type-cacheable/core": "^10.1.2",
     "@type-cacheable/node-cache-adapter": "^10.0.6",
@@ -59,6 +61,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "mocha": "^10.0.0",
     "nodemon": "^2.0.19",
@@ -70,7 +73,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npx lint-staged"
+      "pre-commit": "npx lint-staged",
+      "commit-msg": " npx --no -- commitlint --edit \"$1\""
     }
   },
   "lint-staged": {
