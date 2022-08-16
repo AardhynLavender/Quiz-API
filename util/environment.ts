@@ -4,6 +4,7 @@ type EnvironmentVariable =
   | "PORT"
   | "JWT_SECRET"
   | "JWT_LIFETIME"
+  | "GITHUB_USERNAME"
   | string;
 
 const Environment: Record<EnvironmentVariable, string> = {};

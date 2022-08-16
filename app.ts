@@ -37,10 +37,10 @@ import { SKIP_MIDDLEWARE } from "./api";
 import CreateRoute from "./routes/v1/route";
 
 import Authentication from "./routes/v1/auth";
-// import institutions from "./routes/v1/institutions";
-// import departments from "./routes/v1/departments";
+import User from "./routes/v1/user";
 
 CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
+CreateRoute(app, User, "users");
 // CreateRoute(app, institutions, "institutions");
 // CreateRoute(app, departments, "departments");
 

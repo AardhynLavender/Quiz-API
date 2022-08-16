@@ -1,6 +1,9 @@
 # For us Mac users...
 .DS_Store
 
+# ignore seed files
+seeding/seed*
+
 # Logs
 logs
 *.log

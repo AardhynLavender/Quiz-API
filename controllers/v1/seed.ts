@@ -9,14 +9,23 @@ interface Seed {
 }
 
 const CreateSeedRequest =
-  (model: any, table: string, seedGistHash: string): RequestHandler =>
+  (
+    model: any,
+    table: string,
+    seedGistHash: string,
+    gitHubUsername: string,
+    filename?: string
+  ): RequestHandler =>
   async (req, res) => {
     try {
       const data = await axios.get(
-        `https://api.github.com/gists/${seedGistHash}`
+        `https://gist.github.com/${gitHubUsername}/${seedGistHash}`
       );
-      const seed: Seed = JSON.parse(data.data.files[`${table}s.json`].content);
+      const seed: Seed = JSON.parse(
+        data.data.files[filename ?? `${table}s.json`].content
+      );
       if (!seed) throw "Seed was invalid!";
+      /**@depreciated
       const existing = await model.findUnique({
         where: { id: 1 },
       });
@@ -26,16 +35,19 @@ const CreateSeedRequest =
           data: existing,
         });
       else {
-        await model.create({
-          ...seed,
-        });
+        */
 
-        const mutated = await model.findMany();
-        return res.status(Code.CREATED).json({
-          msg: `${table} successfully seeded`,
-          data: mutated,
-        });
-      }
+      // Assumes seed data can be parsed by Prima.
+      await model.create({
+        ...seed,
+      });
+
+      const mutated = await model.findMany();
+      return res.status(Code.CREATED).json({
+        msg: `${table} successfully seeded`,
+        data: mutated,
+      });
+      // }
     } catch (err: any) {
       return ReturnError(err, res);
     }

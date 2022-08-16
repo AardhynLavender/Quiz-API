@@ -1,5 +1,3 @@
-import { Prisma } from "@prisma/client";
-
 import { Router } from "express";
 
 import {
@@ -9,23 +7,36 @@ import {
   CreateDeleteRequest,
 } from "../../controllers/v1/generic";
 import CreateSeedRequest from "../../controllers/v1/seed";
+import { Environment } from "../../util/environment";
 
 /**
  * Creates a standard router for the model
  * @param {PrismaClient.model} model
  * @param {string} table
  * @param {Array<string>} schema
+ * @param {Array<string>} relations
  * @returns {Router} router
  */
 const CreateRouter = (
-  model: Prisma.InstitutionDelegate<any> | Prisma.DepartmentDelegate<any>,
+  model: any,
   table: string,
   schema: Array<string>,
-  seedGistHash: string,
-  relations?: Array<string>
+  relations?: Array<string>,
+  seedGistHash?: string,
+  gitHubUsername?: string
 ): Router => {
   const router = Router();
-  router.route("/seed").post(CreateSeedRequest(model, table, seedGistHash));
+  if (seedGistHash && gitHubUsername)
+    router
+      .route("/seed")
+      .post(
+        CreateSeedRequest(
+          model,
+          table,
+          seedGistHash,
+          Environment.GITHUB_USERNAME
+        )
+      );
   router
     .route("/:id")
     .get(CreateGetRequest(model, table, relations, false))
