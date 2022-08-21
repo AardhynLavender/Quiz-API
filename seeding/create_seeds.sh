@@ -1,16 +1,33 @@
 #!/bin/bash
-if [ ! -f example.seed.json ]
+if [ $# -ne 1 ];
+then
+  echo please provide the number of seeds to create!
+  exit 1
+fi
+
+seeds=$1
+if [ $seeds -gt 16 ];
+then
+  echo Too many seeds!
+  exit 1
+fi
+
+if [ ! -f example.seed.json ];
 then
   echo could not find seeding template
   exit 1
 fi
-printf "Creating seed file... "
-cp example.seed.json seed-1.json;
-cp example.seed.json seed-2.json
-if [[ ! -f seed-1.json || ! -f seed-2.json ]];
-then
-  echo "Failed!"
-  exit 1
-fi
-echo "Success!"
+
+echo "Creating $seeds seed files... "
+for i in `seq $seeds`
+do
+  seed="seed-$i.json"
+  if [ ! -f $seed ];
+  then
+    cp example.seed.json $seed
+  else 
+    echo $seed already exists... skipping
+  fi
+done
+
 exit 0

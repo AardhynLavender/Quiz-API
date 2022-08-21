@@ -80,20 +80,21 @@ const CreateGetRequest = (
  * @returns A POST handler
  */
 const CreatePostRequest =
-  (model: any, table: string, schema: Array<string>): RequestHandler =>
+  (
+    model: any,
+    table: string,
+    schema: Array<string>,
+    elevation: Role[] | [] = [Role.ADMIN_USER, Role.SUPER_USER]
+  ): RequestHandler =>
   async (req, res) => {
     try {
+      const { id: userId } = req.user ?? { id: undefined };
+      const authorized = await Authorize(userId, elevation);
+      if (!authorized) return Unauthorized(res, Crud.DELETION);
+
       const attributes = ReduceToSchema(schema, req.body);
-      const { id } = req.user ?? { id: undefined };
-      const authorized = await Authorize(id, [
-        Role.ADMIN_USER,
-        Role.SUPER_USER,
-      ]);
-
-      if (!authorized) return Unauthorized(res, Crud.CREATION);
-
       await model.create({
-        data: { ...attributes, userId: id },
+        data: { ...attributes, userId },
       });
 
       const mutated = await model.findMany();
@@ -113,9 +114,18 @@ const CreatePostRequest =
  * @returns A PUT handler
  */
 const CreatePutRequest =
-  (model: any, table: string, schema: Array<string>): RequestHandler =>
+  (
+    model: any,
+    table: string,
+    schema: Array<string>,
+    elevation: Role[] | [] = [Role.ADMIN_USER, Role.SUPER_USER]
+  ): RequestHandler =>
   async (req, res) => {
     try {
+      const { id: userId } = req.user ?? { id: undefined };
+      const authorized = await Authorize(userId, elevation);
+      if (!authorized) return Unauthorized(res, Crud.DELETION);
+
       const { id } = req.params;
       const attributes = ReduceToSchema(schema, req.body);
 
@@ -150,15 +160,18 @@ const CreatePutRequest =
  * @returns A DELETE handler
  */
 const CreateDeleteRequest =
-  (model: any, table: string): RequestHandler =>
+  (
+    model: any,
+    table: string,
+    elevation: Role[] = [Role.SUPER_USER]
+  ): RequestHandler =>
   async (req, res) => {
     try {
-      const { id } = req.params;
       const { id: userId } = req.user ?? { id: undefined };
-      const authorized = await Authorize(userId, [Role.SUPER_USER]);
-
+      const authorized = await Authorize(userId, elevation);
       if (!authorized) return Unauthorized(res, Crud.DELETION);
 
+      const { id } = req.params;
       const data = await model.findUnique({
         where: { id: Number(id) },
       });

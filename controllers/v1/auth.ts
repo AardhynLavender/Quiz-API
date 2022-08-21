@@ -7,6 +7,7 @@ import { Code } from "../../http/http";
 import { Environment } from "../../util/environment";
 import Prisma from "../../util/prismaConfig";
 import { Role, User } from "@prisma/client";
+import CreateProfilePictureURI, { HashString } from "../../util/profile";
 
 interface UserRegistration extends User {
   confirm_password: string;
@@ -24,18 +25,6 @@ const Authorize = async (
   } catch (err: unknown) {
     return false;
   }
-};
-
-const CreateProfilePictureURI = (hash: number) =>
-  `https://avatars.dicebear.com/api/human/${hash}.svg`;
-
-const coefficient = 5; // darn magic numbers again...
-const HashString = (string: string) => {
-  return Array.from(string).reduce((fullHash, _, index) => {
-    const charCode = string.charCodeAt(index);
-    const hash: number = (fullHash << coefficient) - fullHash + charCode;
-    return hash;
-  }, 0);
 };
 
 const CreateFakePassword = (min: number, max: number) =>
