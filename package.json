@@ -14,6 +14,7 @@
     "prisma:studio": "npx prisma studio",
     "prisma:update": "npm i --save-dev prisma@latest @prisma/client@latest",
     "prisma:omni": "npm run prisma:format && npm run prisma:migrate && npm run prisma:generate",
+    "seed:create": "cd seeding && bash ./create_seeds.sh",
     "seed:super_users": "ts-node ./seeding/superUserSeed.ts",
     "lint:check": "npx eslint .",
     "prettier:write": "npx pretty-quick --staged",
