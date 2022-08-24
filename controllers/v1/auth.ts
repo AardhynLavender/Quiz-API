@@ -2,12 +2,12 @@ import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import AssertValid, { AssertEquality } from "../../util/assertion";
-
 import { Code } from "../../http/http";
 import { Environment } from "../../util/environment";
 import Prisma from "../../util/prismaConfig";
 import { Role, User } from "@prisma/client";
 import CreateProfilePictureURI, { HashString } from "../../util/profile";
+import { CreateFakePassword } from "../../util/string";
 
 interface UserRegistration extends User {
   confirm_password: string;
@@ -18,17 +18,19 @@ const Authorize = async (
   elevation: Array<Role>
 ): Promise<boolean> => {
   try {
-    const user = await Prisma.user.findUnique({
-      where: { id: typeof id === "string" ? Number(id) : id },
-    });
+    const user = await GetUser(id);
     return !!user && elevation.includes(user.role);
   } catch (err: unknown) {
     return false;
   }
 };
 
-const CreateFakePassword = (min: number, max: number) =>
-  "*".repeat(Math.floor(Math.random() * (max - min + 1) + min));
+const GetUser = async (id: number | string | undefined) => {
+  const user = await Prisma.user.findUnique({
+    where: { id: typeof id === "string" ? Number(id) : id },
+  });
+  return user;
+};
 
 const SECOND = 1;
 const Sign = (id: number, username: string, invalidate = false) => {
@@ -154,4 +156,4 @@ const Logout = async (req: Request, res: Response) => {
     });
   }
 };
-export { Authorize, Register, Login, Logout };
+export { Authorize, GetUser, Register, Login, Logout };

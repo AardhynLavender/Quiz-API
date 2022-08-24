@@ -4,7 +4,10 @@
  * @param {*} body to be reduced
  * @returns a request body containing only elements in the schema
  */
-const ReduceToSchema = (schema: Array<string>, body: any) =>
+const ReduceToSchema = (
+  schema: Array<string>,
+  body: any
+): Record<string, string | number | object> =>
   schema.reduce((attributes, field) => {
     const value: number | undefined = parseInt(body[field]);
     return {
@@ -18,7 +21,9 @@ const ReduceToSchema = (schema: Array<string>, body: any) =>
  * @param joins array of tables to include
  * @returns an include object
  */
-const IncludeRelations = (joins: Array<string>) => ({
+const IncludeRelations = (
+  joins: Array<string>
+): { include: Record<string, boolean> } => ({
   include: joins.reduce((acc, table) => ({ ...acc, [table]: true }), {}),
 });
 

@@ -21,6 +21,7 @@ const ReturnError = (
   console.error(err);
   return res.status(Code.ERROR).json({
     msg: err.message,
+    data: undefined,
   });
 };
 

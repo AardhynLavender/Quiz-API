@@ -8,44 +8,85 @@ import {
 } from "../../controllers/v1/generic";
 import CreateSeedRequest from "../../controllers/v1/seed";
 import { Environment } from "../../util/environment";
+import CrudInterface, { Table } from "../../types/generic";
+import CreateVoidRoute from "../../controllers/v1/void";
+import { Crud } from "../../types/crud";
 
-/**
- * Creates a standard router for the model
- * @param {PrismaClient.model} model
- * @param {string} table
- * @param {Array<string>} schema
- * @param {Array<string>} relations
- * @returns {Router} router
- */
-const CreateRouter = (
-  model: any,
-  table: string,
-  schema: Array<string>,
-  relations?: Array<string>,
-  seedGistHash?: string,
-  gitHubUsername?: string
-): Router => {
+const CreateRouter = <T extends Table>({
+  name,
+  model,
+  schema,
+  accessPragma,
+  immutables,
+  relations,
+  hiddenFields,
+  seedGistHash,
+}: CrudInterface<T>): Router => {
   const router = Router();
-  if (seedGistHash && gitHubUsername)
+  const {
+    read,
+    update,
+    create: createAccess,
+    readMany,
+    delete: deleteAccess,
+  } = accessPragma;
+
+  // Seeding
+  if (seedGistHash)
     router
       .route("/seed")
       .post(
         CreateSeedRequest(
           model,
-          table,
+          name,
           seedGistHash,
           Environment.GITHUB_USERNAME
         )
       );
+
+  // Single Record Operations
   router
     .route("/:id")
-    .get(CreateGetRequest(model, table, relations, false))
-    .put(CreatePutRequest(model, table, schema))
-    .delete(CreateDeleteRequest(model, table));
+    .get(
+      read
+        ? CreateGetRequest(
+            model,
+            name,
+            hiddenFields,
+            relations,
+            read.unconditionalAccess,
+            read.conditionalAccess,
+            false
+          )
+        : CreateVoidRoute(Crud.READ, name)
+    )
+    .put(
+      update
+        ? CreatePutRequest(
+            model,
+            name,
+            schema,
+            hiddenFields,
+            immutables,
+            update.unconditionalAccess,
+            update.conditionalAccess
+          )
+        : CreateVoidRoute(Crud.UPDATE, name)
+    )
+    .delete(
+      deleteAccess
+        ? CreateDeleteRequest(model, name, deleteAccess)
+        : CreateVoidRoute(Crud.DELETION, name)
+    );
+
   router
     .route("/")
-    .get(CreateGetRequest(model, table, relations))
-    .post(CreatePostRequest(model, table, schema));
+    .get(CreateGetRequest(model, name, hiddenFields, relations, readMany))
+    .post(
+      createAccess
+        ? CreatePostRequest(model, name, schema, hiddenFields, createAccess)
+        : CreateVoidRoute(Crud.CREATION, name)
+    );
 
   return router;
 };
