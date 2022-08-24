@@ -33,16 +33,17 @@ app.use(helmet());
 
 // ROUTES
 
-import { SKIP_MIDDLEWARE } from "./api";
 import CreateRoute from "./routes/v1/route";
 
+import { SKIP_MIDDLEWARE } from "./api";
 import Authentication from "./routes/v1/auth";
-import User from "./routes/v1/user";
-
 CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
+
+import User from "./routes/v1/user";
 CreateRoute(app, User, "users");
-// CreateRoute(app, institutions, "institutions");
-// CreateRoute(app, departments, "departments");
+
+import CreateDefaultRoute from "./routes/v1/defaultRoute";
+CreateDefaultRoute(app, "No handler is available for the provided URL");
 
 // ERROR CHECKS
 
@@ -68,7 +69,7 @@ import {
     app.listen(PORT, (): void => {
       console.log(`Server is listening on port ${PORT}`);
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to start server!");
     console.error(error);
   }
