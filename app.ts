@@ -35,13 +35,30 @@ app.use(helmet());
 
 import CreateRoute from "./routes/v1/route";
 
+// Auth
 import { SKIP_MIDDLEWARE } from "./api";
 import Authentication from "./routes/v1/auth";
 CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
 
+// User
 import User from "./routes/v1/user";
 CreateRoute(app, User, "users");
 
+// Root
+import listEndpoints from "express-list-endpoints";
+import Root from "./routes/v1/root";
+const endpoints = listEndpoints(app).map((endpoint) => ({
+  path: endpoint.path,
+  methods: endpoint.methods,
+}));
+CreateRoute(
+  app,
+  Root("API Available Endpoints", endpoints),
+  "/",
+  SKIP_MIDDLEWARE
+);
+
+// Default
 import CreateDefaultRoute from "./routes/v1/defaultRoute";
 CreateDefaultRoute(app, "No handler is available for the provided URL");
 
