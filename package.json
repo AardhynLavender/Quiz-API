@@ -7,6 +7,7 @@
     "start": "ts-node app.ts",
     "dev": "nodemon app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "gc": "cz",
     "project:configure": "./configureEnvironment.sh",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
@@ -61,6 +62,8 @@
     "@typescript-eslint/parser": "^5.32.0",
     "c8": "^7.12.0",
     "chai": "^4.3.6",
+    "commitizen": "^4.2.5",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.21.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -86,5 +89,10 @@
       "npm run prettier:write",
       "eslint ."
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
