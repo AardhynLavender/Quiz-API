@@ -6,9 +6,12 @@ const CreateRoute = (
   app: Express,
   router: Router,
   endpoint: string,
-  skipMiddleware = false
+  skipMiddleware = false,
+  usePrefix = true
 ): void => {
-  const url = `/${BASE_URL}/${CURRENT_VERSION}/${endpoint}`;
+  const url = `/${
+    usePrefix ? `${BASE_URL}/${CURRENT_VERSION}` : ""
+  }/${endpoint}`;
   skipMiddleware ? app.use(url, router) : app.use(url, middleware, router);
 };
 
