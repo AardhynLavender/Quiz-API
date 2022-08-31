@@ -4,6 +4,7 @@
   "description": "A quiz application",
   "main": "app.js",
   "scripts": {
+    "prepare": "npx husky install",
     "start": "ts-node app.ts",
     "dev": "nodemon app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,8 +20,7 @@
     "seed:super_users": "ts-node ./seeding/superUserSeed.ts",
     "lint:check": "npx eslint .",
     "prettier:write": "npx pretty-quick --staged",
-    "prettier:check": "npx prettier --check .",
-    "prepare": "npx husky install"
+    "prettier:check": "npx prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-list-endpoints": "^6.0.0",
+    "express-rate-limit": "^6.5.2",
     "helmet": "^5.1.1",
     "jsonwebtoken": "^8.5.1",
     "node-cache": "^5.1.2"

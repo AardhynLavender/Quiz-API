@@ -31,6 +31,15 @@ app.use(cors());
 import helmet from "helmet";
 app.use(helmet());
 
+// RATE-LIMITING
+
+const REQUESTS_PM = 25;
+import rateLimit from "express-rate-limit";
+const rateLimitConfig = rateLimit({
+  max: REQUESTS_PM,
+});
+app.use(rateLimitConfig);
+
 // ROUTES
 
 import CreateRoute from "./routes/v1/route";
