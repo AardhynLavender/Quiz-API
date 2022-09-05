@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Code } from "./http";
+import { Code } from "../../types/http";
 
 /**
  * primitive error type

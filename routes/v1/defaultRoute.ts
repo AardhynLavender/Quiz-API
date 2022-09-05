@@ -1,5 +1,5 @@
 import { Express } from "express";
-import { Code } from "../../http/http";
+import { Code } from "../../types/http";
 
 /**
  * Handle the unhandled

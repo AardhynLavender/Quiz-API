@@ -2,7 +2,7 @@ import fs from "fs";
 import { Role, User } from "@prisma/client";
 import Prisma from "../util/prismaConfig";
 import CreateProfilePictureURI, { HashString } from "../util/profile";
-import bcryptjs from "bcryptjs";
+import { StandardHash } from "../util/auth";
 
 const SUCCESS = 0;
 const ERROR = 1;
@@ -22,8 +22,7 @@ const GetSeedData = async (directory: string, match: RegExp) => {
       console.log(` ✔️ Found '${seed.username}'`);
       const { email, username, password } = seed;
 
-      const salt = await bcryptjs.genSalt();
-      const hashedPassword = await bcryptjs.hash(password, salt);
+      const hashedPassword = await StandardHash(password);
 
       const profile_picture_uri = CreateProfilePictureURI(
         HashString(email + username)

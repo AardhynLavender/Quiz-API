@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { User } from "../http/credentials";
-import { Code, UserRequest } from "../http/http";
+import { NextFunction, Response } from "express";
+import jwt from "jsonwebtoken";
+import { User } from "../types/credentials";
+import { Code, UserRequest } from "../types/http";
 import { Environment } from "../util/environment";
 
 const prefix = "Bearer ";

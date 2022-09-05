@@ -2,12 +2,13 @@ import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import AssertValid, { AssertEquality } from "../../util/assertion";
-import { Code } from "../../http/http";
+import { Code } from "../../types/http";
 import { Environment } from "../../util/environment";
 import Prisma from "../../util/prismaConfig";
 import { Role, User } from "@prisma/client";
 import CreateProfilePictureURI, { HashString } from "../../util/profile";
 import { CreateFakePassword } from "../../util/string";
+import { StandardHash } from "../../util/auth";
 
 interface UserRegistration extends User {
   confirm_password: string;
@@ -76,8 +77,7 @@ const Register = async (req: Request, res: Response) => {
       });
     }
 
-    const salt = await bcryptjs.genSalt();
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await StandardHash(password);
 
     const userHash: number = HashString(email + username);
     const profilePictureUri = CreateProfilePictureURI(userHash);

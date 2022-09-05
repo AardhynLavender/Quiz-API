@@ -1,4 +1,4 @@
-import { Code, RequestHandler } from "../../http/http";
+import { Code, RequestHandler } from "../../types/http";
 import { Crud } from "../../types/crud";
 
 const CreateVoidRoute =

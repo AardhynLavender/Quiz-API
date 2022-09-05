@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Code } from "../../http/http";
+import { Code } from "../../types/http";
 
 /**
  * Return data for the root route.
