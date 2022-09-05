@@ -15,7 +15,8 @@ export interface Permission<T> {
   conditionalAccess: DataAccess<T>; // authorization based on role and returned data
 }
 
-export interface AccessPragma<T> {
+// permissions for CRUD operations on T
+export interface CrudAccessPragma<T> {
   create?: Role[];
   read?: Permission<T>;
   readMany?: Role[];
@@ -23,17 +24,34 @@ export interface AccessPragma<T> {
   delete?: Role[];
 }
 
-export type HiddenFields = Record<string, string>; // Replace the value of a field with a placeholder
+// Permissions for Seeding pools on T
+export interface SeedAccessPragma {
+  pool?: string;
+  unconditionalAccess: Role[];
+}
 
-export type Immutability = Record<Role, string[]>; // Fields that cannot be changed
+// Replace the value of a field with a placeholder
+export type HiddenFields = Record<string, string>;
 
+// Fields that cannot be changed
+export type Immutability = Record<Role, string[]>;
+
+// fields from the schema that are computed rather than extracted from a request
+export type ComputedValue = Record<
+  string,
+  (request?: object) => string | number | object
+>;
+
+// describes an interface to a table ( excuse the context overlap of 'interface' )
 export default interface CrudInterface<T extends Table> {
   name: string;
-  model: any;
+  model: any; // eek! explicit any!
   schema: string[];
-  accessPragma: AccessPragma<T>; // CRUD access permissions
+  unique: (string | number)[];
+  computed?: ComputedValue[];
+  accessPragma: CrudAccessPragma<T>; // CRUD access permissions
   immutables?: Immutability;
   hiddenFields?: HiddenFields;
-  relations?: string[];
-  seedGistHash?: Gist; // where to get Seed data
+  relations?: string[]; // foreign keys
+  seed?: SeedAccessPragma[];
 }

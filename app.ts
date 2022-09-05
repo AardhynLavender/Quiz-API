@@ -1,7 +1,25 @@
 // ENVIRONMENT
 
 import dotenv from "dotenv";
+
 dotenv.config();
+import {
+  AssertEnvironmentVariable,
+  Environment,
+  EnvironmentVariable,
+} from "./util/environment";
+
+console.log("\nChecking local ENV...");
+for (const variable of [
+  "DATABASE_URL",
+  "SHADOW_DATABASE_URL",
+  "PORT",
+  "JWT_SECRET",
+  "JWT_LIFETIME",
+  "SEED_GIST_HASH",
+  "GITHUB_USERNAME",
+] as EnvironmentVariable[])
+  AssertEnvironmentVariable(variable);
 
 // EXPRESS
 
@@ -69,24 +87,8 @@ CreateDefaultRoute(app, "No handler is available for the provided URL");
 
 // ERROR CHECKS
 
-import {
-  AssertEnvironmentVariable,
-  Environment,
-  EnvironmentVariable,
-} from "./util/environment";
-
 (async () => {
   try {
-    console.log("\nChecking local ENV...");
-    for (const variable of [
-      "DATABASE_URL",
-      "SHADOW_DATABASE_URL",
-      "PORT",
-      "JWT_SECRET",
-      "JWT_LIFETIME",
-    ] as EnvironmentVariable[])
-      AssertEnvironmentVariable(variable);
-
     const PORT = Environment.PORT;
     app.listen(PORT, (): void => {
       console.log(`Server is listening on port ${PORT}`);

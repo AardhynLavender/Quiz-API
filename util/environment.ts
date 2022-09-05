@@ -4,6 +4,7 @@ type EnvironmentVariable =
   | "PORT"
   | "JWT_SECRET"
   | "JWT_LIFETIME"
+  | "SEED_GIST_HASH"
   | "GITHUB_USERNAME"
   | string;
 

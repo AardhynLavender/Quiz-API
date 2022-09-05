@@ -1,5 +1,4 @@
-import { Express, Router } from "express";
-import { BASE_URL, CURRENT_VERSION } from "../../api";
+import { Router } from "express";
 import { Code } from "../../http/http";
 
 /**

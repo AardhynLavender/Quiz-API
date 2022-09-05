@@ -7,20 +7,21 @@ import {
   CreateDeleteRequest,
 } from "../../controllers/v1/generic";
 import CreateSeedRequest from "../../controllers/v1/seed";
-import { Environment } from "../../util/environment";
 import CrudInterface, { Table } from "../../types/generic";
 import CreateVoidRoute from "../../controllers/v1/void";
 import { Crud } from "../../types/crud";
+import { Environment } from "../../util/environment";
 
 const CreateRouter = <T extends Table>({
   name,
   model,
   schema,
+  unique,
   accessPragma,
   immutables,
   relations,
   hiddenFields,
-  seedGistHash,
+  seed,
 }: CrudInterface<T>): Router => {
   const router = Router();
   const {
@@ -32,16 +33,24 @@ const CreateRouter = <T extends Table>({
   } = accessPragma;
 
   // Seeding
-  if (seedGistHash)
-    router
-      .route("/seed")
-      .post(
-        CreateSeedRequest(
-          model,
-          name,
-          seedGistHash,
-          Environment.GITHUB_USERNAME
-        )
+  if (seed && seed.length)
+    if (Environment.SEED_GIST_HASH) {
+      const { unconditionalAccess, pool } = seed[0];
+
+      // seed route helper function
+      const request = (pool: string | undefined) =>
+        CreateSeedRequest(model, name, unconditionalAccess, unique, pool);
+
+      // first seed will be default
+      router.route("/seed").post(request(pool));
+      if (seed.length > 1)
+        seed.forEach(({ pool }) => {
+          // optionally specify a seed pool
+          router.route(`/seed/${pool}`).post(request(pool));
+        });
+    } else
+      console.error(
+        `WARN: Unable to create /Seed route for ${name} Crud Interface!\n      No GITHUB_GIST_HASH could be found. Has it been defined within /.env?`
       );
 
   // Single Record Operations

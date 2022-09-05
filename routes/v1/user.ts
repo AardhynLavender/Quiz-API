@@ -21,6 +21,7 @@ const user: CrudInterface<User> = {
     "profile_picture_uri",
     "role",
   ],
+  unique: ["email", "username"],
   accessPragma: {
     create: undefined, // creation is handled via `/auth/Register`
     read: {
@@ -42,8 +43,16 @@ const user: CrudInterface<User> = {
   hiddenFields: {
     password: CreateFakePassword(6, 12),
   },
+  seed: [
+    {
+      unconditionalAccess: ["SUPER_USER"],
+      pool: "admin",
+    },
+    {
+      unconditionalAccess: ["SUPER_USER", "ADMIN_USER"],
+      pool: "basic",
+    },
+  ],
 };
 
 export default CreateRouter(user);
-// [],
-// "271fbf9f9d9ecd5bba6da1234eff1f79"
