@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
-import { ReturnError as Error } from "../../http/error";
-import { Code, RequestHandler } from "../../http/http";
+import { ReturnError as Error } from "./error";
+import { Code, RequestHandler } from "../../types/http";
 import { IncludeRelations, ReduceToSchema } from "../../util/schema";
 import { Authorize, GetUser } from "./auth";
 import { Response } from "express";

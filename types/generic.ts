@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { Quiz, Role, Submission, User } from "@prisma/client";
+import { Request } from "express";
 export type Table = User | Quiz | Submission;
 
 export interface Authorization {
@@ -37,10 +38,10 @@ export type HiddenFields = Record<string, string>;
 export type Immutability = Record<Role, string[]>;
 
 // fields from the schema that are computed rather than extracted from a request
-export type ComputedValue = Record<
-  string,
-  (request?: object) => string | number | object
->;
+export interface ComputedValue {
+  name: string;
+  compute: (request: any) => Promise<string | number | object>;
+}
 
 // describes an interface to a table ( excuse the context overlap of 'interface' )
 export default interface CrudInterface<T extends Table> {

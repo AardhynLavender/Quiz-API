@@ -18,6 +18,7 @@ const CreateRouter = <T extends Table>({
   schema,
   unique,
   accessPragma,
+  computed,
   immutables,
   relations,
   hiddenFields,
@@ -39,7 +40,14 @@ const CreateRouter = <T extends Table>({
 
       // seed route helper function
       const request = (pool: string | undefined) =>
-        CreateSeedRequest(model, name, unconditionalAccess, unique, pool);
+        CreateSeedRequest(
+          model,
+          name,
+          unconditionalAccess,
+          unique,
+          computed,
+          pool
+        );
 
       // first seed will be default
       router.route("/seed").post(request(pool));

@@ -3,7 +3,7 @@ import CreateRouter from "./generic";
 import CrudInterface from "../../types/generic";
 import { User } from "@prisma/client";
 import { CreateFakePassword } from "../../util/string";
-import AccessingOwn from "../../util/auth";
+import { AccessingOwn, StandardHash } from "../../util/auth";
 
 /**
  * An interface for the User table
@@ -40,6 +40,12 @@ const user: CrudInterface<User> = {
     ADMIN_USER: ["role"],
     BASIC_USER: ["role"],
   },
+  computed: [
+    {
+      name: "password",
+      compute: async ({ password }) => await StandardHash(password),
+    },
+  ],
   hiddenFields: {
     password: CreateFakePassword(6, 12),
   },

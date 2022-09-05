@@ -1,9 +1,10 @@
-import { Code, RequestHandler } from "../../http/http";
-import { ReturnError } from "../../http/error";
+import { Code, RequestHandler } from "../../types/http";
+import { ReturnError } from "./error";
 import axios from "axios";
 import { GetUser } from "./auth";
 import { Role } from "@prisma/client";
 import { Environment } from "../../util/environment";
+import { ComputedValue } from "../../types/generic";
 
 const CreateSeedRequest =
   (
@@ -11,6 +12,7 @@ const CreateSeedRequest =
     table: string,
     access: Role[],
     unique: (string | number)[],
+    computed?: ComputedValue[],
     filename?: string
   ): RequestHandler =>
   async (req, res) => {
@@ -36,10 +38,10 @@ const CreateSeedRequest =
         `https://api.github.com/gists/${Environment.SEED_GIST_HASH}`
       );
       type Seed = Record<string, string | number | object>;
-      const seed: Seed[] = JSON.parse(
+      const seeds: Seed[] = JSON.parse(
         data.data.files[`${filename ?? table}.json`].content
       );
-      if (!seed) throw "Seed was invalid!";
+      if (!seeds) throw "Seed was invalid!";
 
       // find seeds that already exist ( return only the unique fields )
       const duplicates: Seed[] = await model.findMany({
@@ -47,7 +49,7 @@ const CreateSeedRequest =
           (predicate, field) => ({
             ...predicate,
             [field]: {
-              in: seed.map((record) => record[field]),
+              in: seeds.map((record) => record[field]),
             },
           }),
           {}
@@ -63,9 +65,22 @@ const CreateSeedRequest =
         duplicates.find((duplicate: Seed) =>
           unique.every((field) => duplicate[field] === seed[field])
         );
-      const uniqueSeeds = seed.filter((seed: Seed) => !IsDuplicate(seed));
+      const uniqueSeeds = seeds.filter((seed: Seed) => !IsDuplicate(seed));
+
+      // compute values
+      const computedSeeds = computed
+        ? await Promise.all(
+            uniqueSeeds.map(async (seed) => {
+              for (const { name, compute } of computed)
+                seed[name] = await compute(seed);
+              return seed;
+            })
+          )
+        : uniqueSeeds;
+
+      // insert seeds
       await model.createMany({
-        data: uniqueSeeds,
+        data: computedSeeds,
       });
 
       // response
@@ -73,7 +88,7 @@ const CreateSeedRequest =
         msg: `${table} successfully seeded`,
         data: {
           duplicates,
-          seeded: uniqueSeeds?.map((seed) => ({
+          seeded: computedSeeds?.map((seed) => ({
             ...unique.reduce(
               (fields, field) => ({ ...fields, [field]: seed[field] }),
               {}
