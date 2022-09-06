@@ -18,8 +18,10 @@ for (const variable of [
   "JWT_LIFETIME",
   "SEED_GIST_HASH",
   "GITHUB_USERNAME",
+  "NODE_ENV",
 ] as EnvironmentVariable[])
   AssertEnvironmentVariable(variable);
+console.log("...Checks complete!");
 
 // EXPRESS
 
@@ -51,12 +53,15 @@ app.use(helmet());
 
 // RATE-LIMITING
 
-const REQUESTS_PM = 25;
 import rateLimit from "express-rate-limit";
-const rateLimitConfig = rateLimit({
-  max: REQUESTS_PM,
-});
-app.use(rateLimitConfig);
+if (Environment.NODE_ENV !== "QA") {
+  const REQUESTS_PM = 25;
+  const rateLimitConfig = rateLimit({
+    max: REQUESTS_PM,
+  });
+
+  app.use(rateLimitConfig);
+}
 
 // ROUTES
 
@@ -98,3 +103,5 @@ CreateDefaultRoute(app, "No handler is available for the provided URL");
     console.error(error);
   }
 })();
+
+export default app;

@@ -23,4 +23,9 @@ type RequestHandler = (
   next?: NextFunction
 ) => Promise<Response<any, Record<string, any>>>;
 
-export { RequestHandler, Code, UserRequest };
+interface Query {
+  predicate: string;
+  value: string | number | object;
+}
+
+export { RequestHandler, Code, UserRequest, Query };

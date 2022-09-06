@@ -6,6 +6,7 @@ type EnvironmentVariable =
   | "JWT_LIFETIME"
   | "SEED_GIST_HASH"
   | "GITHUB_USERNAME"
+  | "NODE_ENV"
   | string;
 
 const Environment: Record<EnvironmentVariable, string> = {};
