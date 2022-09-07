@@ -1,2 +1,3 @@
 import "./setup.test";
-import "./auth.test";
+import "./registration.test";
+// import "./auth.test";

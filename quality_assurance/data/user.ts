@@ -1,3 +1,5 @@
+import CreateProfilePictureURI, { HashString } from "./../../util/profile";
+
 export const UnregisteredUser = {
   email: "gOrr@op.ac.nz",
   username: "gOrr",
@@ -10,8 +12,8 @@ export const UnregisteredUser = {
 export const SuperAdmin = {
   email: "jsalmon@gmail.com",
   username: "jsalmon",
-  first_name: "jeffany",
-  last_name: "salmon",
+  first_name: "Jeffany",
+  last_name: "Salmon",
   password: "1mag!ne",
   role: "SUPER_USER",
 };
@@ -23,4 +25,18 @@ export const UnauthenticatedUser = {
 
 export const AdminUser = {};
 
-export const BasicUser = {};
+const first_name = "Merlin";
+const email = "mmann@gmail.com";
+const hash = HashString(first_name + email);
+const profile_picture_uri = CreateProfilePictureURI(hash);
+const password = "always2th!ngs";
+export const BasicUser = {
+  email,
+  first_name,
+  profile_picture_uri,
+  password,
+  confirm_password: password,
+  username: "mmann",
+  last_name: "Mann",
+  role: "BASIC_USER",
+};
