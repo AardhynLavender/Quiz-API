@@ -18,7 +18,7 @@
     "seed:create": "cd seeding && bash ./create_seeds.sh",
     "seed:super_users": "ts-node ./seeding/superUserSeed.ts",
     "lint:check": "npx eslint .",
-    "test:mocha": "cross-env NODE_ENV=QA npx mocha --timeout 5000 --exit -r ts-node/register ./quality_assurance/index.spec.ts",
+    "test:mocha": "cross-env NODE_ENV=QA npx mocha --timeout 10000 --exit -r ts-node/register ./quality_assurance/index.spec.ts",
     "prettier:write": "npx pretty-quick --staged",
     "prettier:check": "npx prettier --check ."
   },

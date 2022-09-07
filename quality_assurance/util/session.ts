@@ -10,5 +10,5 @@ export const RetrieveToken = (): Promise<string> =>
   new Promise((resolve, reject) => {
     const token = Session[TOKEN];
     if (token && typeof token === "string") resolve(token);
-    else reject("Unable to retrieve token");
+    else reject(new Error("Unable to retrieve token"));
   });

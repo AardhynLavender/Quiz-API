@@ -20,12 +20,12 @@ export const SeedUser = async (user: User) => {
 };
 
 before((done) => {
-  // ClearDatabase();
+  ClearDatabase();
   done();
 });
 
 after((done) => {
-  // ClearDatabase();
+  ClearDatabase();
   Actor.close();
   done();
 });
