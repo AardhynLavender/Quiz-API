@@ -68,8 +68,8 @@ const Register = async (req: Request, res: Response) => {
       AssertValid.LastName(last_name);
       AssertValid.Username(username);
       AssertValid.Email(email, username);
-      AssertValid.Password(password);
-      AssertEquality("password", confirm_password, password);
+      AssertValid.Password(password ?? "");
+      AssertValid.PasswordConfirmation(password, confirm_password);
     } catch (assertion: unknown) {
       // catch errors cased by the client
       return res.status(Code.BAD_REQUEST).json({

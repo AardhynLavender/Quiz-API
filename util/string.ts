@@ -4,4 +4,10 @@ const CreateFakePassword = (min: number, max: number) =>
 const ToSentenceCase = (string: string) =>
   `${string.charAt(0).toUpperCase()}${string.slice(1).toLowerCase()}`;
 
-export { CreateFakePassword, ToSentenceCase };
+const ToQuietSnakeCase = (string: string) =>
+  string.replace(" ", "_").toLowerCase();
+
+const Pluralize = (string: string, quantity?: number) =>
+  quantity == undefined ? `${string}s` : quantity == 1 ? string : `${string}s`;
+
+export { CreateFakePassword, ToSentenceCase, ToQuietSnakeCase, Pluralize };
