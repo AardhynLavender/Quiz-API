@@ -12,7 +12,7 @@ const AuthRoute = (req: UserRequest, res: Response, next: NextFunction) => {
     const authHeader: string = req.headers.authorization ?? "";
     if (!authHeader.startsWith(prefix))
       return res
-        .status(Code.FORBIDDEN)
+        .status(Code.UNAUTHORIZED)
         .json({ msg: "Failed to validate authentication" });
 
     const token: string = authHeader.split(space)[1];

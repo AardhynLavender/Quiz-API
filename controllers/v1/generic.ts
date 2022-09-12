@@ -116,7 +116,7 @@ const CreateGetRequest = <T extends Table>(
           });
           if (!data)
             return res
-              .status(Code.SUCCESS)
+              .status(Code.NOTFOUND)
               .json({ msg: `No ${table} with the id: ${id} found` });
 
           // Authorization
@@ -124,7 +124,7 @@ const CreateGetRequest = <T extends Table>(
             if (dataAccess) {
               const access = dataAccess(data, user);
               if (!access.success)
-                return res.status(Code.UNAUTHORIZED).json({
+                return res.status(Code.FORBIDDEN).json({
                   msg: access.message,
                 });
             } else return Unauthorized(res, Crud.READ);

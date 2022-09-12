@@ -1,5 +1,5 @@
 import Actor from "./actor";
-import { SuperAdmin, UnauthenticatedUser, UnregisteredUser } from "./data/user";
+import { UnauthenticatedUser, UnregisteredUser, BasicUser } from "./data/user";
 import Url from "./util/request";
 import chai from "chai";
 import chaiHttp from "chai-http";
@@ -35,14 +35,14 @@ describe("Authentication", () => {
   });
   it("Should login with valid credentials", (done) => {
     Actor.post(login)
-      .send(SuperAdmin)
+      .send(BasicUser)
       .end((_, res) => {
         const { body } = res;
         AssertStandardResponse(res);
         chai.expect(body).to.have.property("token");
         chai
           .expect(body.msg)
-          .to.equal(`${SuperAdmin.username} has been logged in`);
+          .to.equal(`${BasicUser.username} has been logged in`);
         StoreToken(body.token);
         done();
       });
