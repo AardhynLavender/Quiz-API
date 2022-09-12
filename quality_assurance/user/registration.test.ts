@@ -1,12 +1,12 @@
-import Actor from "./actor";
-import { BasicUser } from "./data/user";
-import Url from "./util/request";
+import Actor from "../actor";
+import { BasicUser } from "../data/user";
+import Url from "../util/request";
 import chai from "chai";
 import chaiHttp from "chai-http";
-import { Code } from "../types/http";
-import { AssertStandardResponse } from "./util/assertion";
+import { Code } from "../../types/http";
+import { AssertStandardResponse } from "../util/assertion";
 import { Role } from ".prisma/client";
-import { ToQuietSnakeCase } from "./../util/string";
+import { ToQuietSnakeCase } from "../../util/string";
 
 chai.use(chaiHttp);
 

@@ -1,3 +1,4 @@
 import "./setup.test";
-import "./registration.test";
-// import "./auth.test";
+import "./user/registration.test";
+import "./auth.test";
+import "./user/read.test";
