@@ -1,10 +1,6 @@
 import { Code } from "../../types/http";
+import { Response } from "..";
 import chai from "chai";
-
-interface Response {
-  status: number;
-  body: any;
-}
 
 export const AssertStandardResponse = (
   { status, body }: Response,
