@@ -5,17 +5,17 @@ import { AssertStandardResponse } from "../util/assertion";
 import { Code } from "../../types/http";
 import Url from "../util/request";
 import { RetrieveToken } from "../util/session";
-import { BasicUser, AdminUser } from "../data/user";
-import { GetUser, SeedUser } from "../util/user";
-import { UserSeed, UserSharedData } from "quality_assurance";
+import { BasicUser } from "../data/user";
+import { GetUser } from "../util/user";
+import { UserSharedData } from "quality_assurance";
 
 chai.use(chaiHttp);
 describe("User Reading", () => {
   const Message = {
     READ_ELEVATION_ERR: "read requires an elevated permission level",
   };
-  const SKIP_ADMIN_USER = 2;
-  const SKIP_BASIC_USER = 1;
+  const SKIP_ADMIN_USER = 1;
+  const SKIP_BASIC_USER = -1;
   const ONE_USER = 1;
   const FIRST_USER = 0;
   const SharedData: UserSharedData = {
@@ -31,7 +31,6 @@ describe("User Reading", () => {
     const { id } = (await GetUser(BasicUser.username)) ?? { id: undefined }; // eslint-disable-line no-extra-parens
     chai.expect(id).to.not.be.undefined;
     SharedData.AuthenticatedUserId = id;
-    SeedUser(AdminUser as UserSeed);
   });
   it("BASIC_USER should fail to read all users", (done) => {
     Actor.get(Url("users"))
