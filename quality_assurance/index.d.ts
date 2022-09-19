@@ -8,6 +8,8 @@ interface UserSharedData {
     Authorization: string;
   };
   AuthenticatedUserId?: number;
+  UnauthenticatedUserId?: number;
+  BasicUserId?: number;
 }
 
 interface Response {
