@@ -1,3 +1,5 @@
+import { isDate } from "util/types";
+
 /**
  * reduces an a request `body` to a the elements in the `schema`
  * @param {Array<string>} schema to reduce to
@@ -9,10 +11,15 @@ const ReduceToSchema = (
   body: any
 ): Record<string, string | number | object> =>
   schema.reduce((attributes, field) => {
-    const value: number | undefined = parseInt(body[field]);
+    const valueUntyped = body[field];
+    const value: number | undefined = parseInt(valueUntyped);
     return {
       ...attributes,
-      [field]: isNaN(value) ? body[field] : value, // convert to number if !NaN
+      [field]: Date.parse(valueUntyped)
+        ? new Date(valueUntyped)
+        : isNaN(value)
+        ? (valueUntyped as string) //eslint-disable-line no-extra-parens
+        : (value as number), //eslint-disable-line no-extra-parens
     };
   }, {});
 
