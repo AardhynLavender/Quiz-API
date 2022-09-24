@@ -76,6 +76,10 @@ CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
 import User from "./routes/v1/user";
 CreateRoute(app, User, "users");
 
+// Quiz
+import Quiz from "./routes/v1/quiz";
+CreateRoute(app, Quiz, "quizzes");
+
 // Root
 import listEndpoints from "express-list-endpoints";
 import Root from "./routes/v1/root";
@@ -90,11 +94,10 @@ CreateRoute(app, root, "", SKIP_MIDDLEWARE, false);
 import CreateDefaultRoute from "./routes/v1/defaultRoute";
 CreateDefaultRoute(app, "No handler is available for the provided URL");
 
-// ERROR CHECKS
-
 (async () => {
   try {
     const PORT = Environment.PORT;
+
     app.listen(PORT, (): void => {
       console.log(`Server is listening on port ${PORT}`);
     });
