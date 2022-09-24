@@ -183,7 +183,16 @@ const CreatePostRequest =
       });
 
       // user defined success handler
-      if (onCreateSuccess) await onCreateSuccess(record);
+      try {
+        if (onCreateSuccess) await onCreateSuccess(record);
+      } catch (e) {
+        const response = ResponseData(
+          record,
+          `Created ${table} with errors in user defined success handler: ${e}`,
+          hiddenFields
+        );
+        return res.status(Code.CREATED).json(response);
+      }
 
       // Response Generation
       const response = ResponseData(
