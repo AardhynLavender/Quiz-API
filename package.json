@@ -17,6 +17,7 @@
     "prisma:omni": "npm run prisma:format && npm run prisma:migrate && npm run prisma:generate",
     "seed:create": "cd seeding && bash ./create_seeds.sh",
     "seed:super_users": "ts-node ./seeding/superUserSeed.ts",
+    "seed:implicit": "ts-node ./seeding/seedImplicit.ts",
     "lint:check": "npx eslint .",
     "qa:test": "cross-env NODE_ENV=QA npx mocha --timeout 10000 --exit -r ts-node/register ./quality_assurance/index.spec.ts",
     "qa:coverage": "cross-env NODE_ENV=QA npx c8 npm run qa:test --clean && npx c8 report --reporter=html && open-cli coverage/index.html",

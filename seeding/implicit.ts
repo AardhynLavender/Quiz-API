@@ -5,22 +5,25 @@ import {
   GetDifficulties,
   GetTypes,
 } from "../external_api/OpenTriviaDB";
-import { Category } from "@prisma/client";
-
-/**
- * @author Aardhyn Lavender 2022
- * @description Seed the categories, difficulties, and question types, with the categories from Open Trivia DB
- */
-
-const SelectNames = (categories: OpenTriviaCategory[]): Category[] =>
-  categories.map((category) => ({ name: category.name }));
 
 export const SeedCategories = async () => {
   const categories = await GetCategories();
+  const data = categories
+    .map((category: OpenTriviaCategory) => ({
+      name: category.name,
+      categoryKey: category.id, // I need to store OpenTriviaDB's category id for filtering questions
+    }))
+    .concat([
+      {
+        name: "mixed",
+        categoryKey: 0,
+      },
+    ]);
+
   const existing = await Prisma.category.count();
   if (!existing)
     await Prisma.category.createMany({
-      data: SelectNames(categories),
+      data,
     });
   else
     console.log("There are already 'categories' in the database... skipping");
