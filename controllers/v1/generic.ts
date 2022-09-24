@@ -8,6 +8,7 @@ import {
   DataAccess,
   HiddenFields,
   Immutability,
+  OnSuccess,
   Table,
 } from "../../types/generic";
 import { Crud } from "../../types/crud";
@@ -59,11 +60,12 @@ const CreateGetRequest = <T extends Table>(
   table: string,
   hiddenFields?: HiddenFields,
   relations?: Array<string>,
+  unauthorizedAccess?: Role[],
   access?: Role[],
   dataAccess?: DataAccess<T>,
   many = true
-): RequestHandler =>
-  many
+): RequestHandler => {
+  return many
     ? async (req, res) => {
         try {
           const user = await GetUser(req.user?.id);
@@ -74,16 +76,16 @@ const CreateGetRequest = <T extends Table>(
 
           const { role } = user; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
+          // Unconditional Access
+          if (access && !access.includes(role))
+            return Unauthorized(res, Crud.READ);
+
           // Reading
           const data = await model.findMany(
             relations ? IncludeRelations(relations) : {}
           );
           if (!data.length)
             return res.status(Code.SUCCESS).json({ msg: `No ${table}s found` });
-
-          // Unconditional Access
-          if (!access || !access.includes(role))
-            return Unauthorized(res, Crud.READ);
 
           // Response Generation
           const response = ResponseData(
@@ -120,6 +122,12 @@ const CreateGetRequest = <T extends Table>(
               .json({ msg: `No ${table} with the id: ${id} found` });
 
           // Authorization
+
+          if (unauthorizedAccess && unauthorizedAccess?.includes(role))
+            return res.status(Code.FORBIDDEN).json({
+              msg: `accessing ${table} requires an elevated permission level`,
+            });
+
           if (!access || !access.includes(role))
             if (dataAccess) {
               const access = dataAccess(data, user);
@@ -127,7 +135,7 @@ const CreateGetRequest = <T extends Table>(
                 return res.status(Code.FORBIDDEN).json({
                   msg: access.message,
                 });
-            } else return Unauthorized(res, Crud.READ);
+            }
 
           // Response Generation
           const response = ResponseData(
@@ -141,6 +149,7 @@ const CreateGetRequest = <T extends Table>(
           return Error(err, res);
         }
       };
+};
 
 /**
  * Generates a POST request
@@ -150,12 +159,13 @@ const CreateGetRequest = <T extends Table>(
  * @returns A POST handler
  */
 const CreatePostRequest =
-  (
+  <T extends Table>(
     model: any,
     table: string,
     schema: Array<string>,
     hiddenFields?: HiddenFields,
-    access?: Role[]
+    access?: Role[],
+    onCreateSuccess?: OnSuccess<T>
   ): RequestHandler =>
   async (req, res) => {
     try {
@@ -168,14 +178,16 @@ const CreatePostRequest =
 
       // Creation
       const attributes = ReduceToSchema(schema, req.body);
-      await model.create({
+      const record = await model.create({
         data: { ...attributes },
       });
 
+      // user defined success handler
+      if (onCreateSuccess) await onCreateSuccess(record);
+
       // Response Generation
-      const mutated = await model.findMany();
       const response = ResponseData(
-        mutated,
+        record,
         `Successfully created ${table}`,
         hiddenFields
       );
@@ -210,7 +222,8 @@ const CreatePutRequest =
         return res
           .status(Code.UNAUTHORIZED)
           .json({ msg: "No user found! Have you logged in?" });
-      const { id: userId, role } = user;
+
+      const { role } = user;
 
       // Data Extraction
       const { id } = req.params;
@@ -248,7 +261,7 @@ const CreatePutRequest =
             return res.status(Code.UNAUTHORIZED).json({
               msg: access.message,
             });
-        } else return Unauthorized(res, Crud.READ);
+        }
       }
 
       // Mutation
@@ -277,17 +290,34 @@ const CreatePutRequest =
  * @returns A DELETE handler
  */
 const CreateDeleteRequest =
-  (
+  <T extends Table>(
     model: any,
     table: string,
-    access: Role[] = [Role.SUPER_USER]
+    unauthorizedAccess?: Role[],
+    access?: Role[],
+    dataAccess?: DataAccess<T>
   ): RequestHandler =>
   async (req, res) => {
     try {
       // Authorization
-      const { id: userId } = req.user ?? { id: undefined };
-      const authorized = await Authorize(userId, access);
-      if (!authorized) return Unauthorized(res, Crud.DELETION);
+      const user = await GetUser(req.user?.id);
+      if (!user)
+        return res
+          .status(Code.UNAUTHORIZED)
+          .json({ msg: "No user found! Have you logged in?" });
+
+      const { role } = user;
+      console.log(role);
+
+      // Unauthorized Access Authorization
+      if (unauthorizedAccess && unauthorizedAccess?.includes(role))
+        return res.status(Code.FORBIDDEN).json({
+          msg: `You do not have permission to delete this records from ${table}`,
+        });
+
+      // Unconditional Access Authorization
+      if (access && !access.includes(role))
+        return Unauthorized(res, Crud.DELETION);
 
       // Data Extraction
       const { id } = req.params;
@@ -300,6 +330,15 @@ const CreateDeleteRequest =
         return res
           .status(Code.SUCCESS)
           .json({ msg: `No ${table} with the id: ${id} found` });
+      }
+
+      // Data Access Authorization
+      if (dataAccess) {
+        const access = dataAccess(data, user);
+        if (!access.success)
+          return res.status(Code.FORBIDDEN).json({
+            msg: access.message,
+          });
       }
 
       // Deletion

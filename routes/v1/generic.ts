@@ -23,6 +23,7 @@ const CreateRouter = <T extends Table>({
   relations,
   hiddenFields,
   seed,
+  onCreateSuccess,
 }: CrudInterface<T>): Router => {
   const router = Router();
   const {
@@ -71,6 +72,7 @@ const CreateRouter = <T extends Table>({
             name,
             hiddenFields,
             relations,
+            read.unauthorizedAccess,
             read.unconditionalAccess,
             read.conditionalAccess,
             false
@@ -92,16 +94,38 @@ const CreateRouter = <T extends Table>({
     )
     .delete(
       deleteAccess
-        ? CreateDeleteRequest(model, name, deleteAccess)
+        ? CreateDeleteRequest(
+            model,
+            name,
+            deleteAccess.unauthorizedAccess,
+            deleteAccess.unconditionalAccess,
+            deleteAccess.conditionalAccess
+          )
         : CreateVoidRoute(Crud.DELETION, name)
     );
 
   router
     .route("/")
-    .get(CreateGetRequest(model, name, hiddenFields, relations, readMany))
+    .get(
+      CreateGetRequest(
+        model,
+        name,
+        hiddenFields,
+        relations,
+        undefined,
+        readMany
+      )
+    )
     .post(
       createAccess
-        ? CreatePostRequest(model, name, schema, hiddenFields, createAccess)
+        ? CreatePostRequest(
+            model,
+            name,
+            schema,
+            hiddenFields,
+            createAccess,
+            onCreateSuccess
+          )
         : CreateVoidRoute(Crud.CREATION, name)
     );
 

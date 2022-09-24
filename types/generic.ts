@@ -12,8 +12,9 @@ export interface Authorization {
 export type DataAccess<T> = (data: T, user: User) => Authorization;
 
 export interface Permission<T> {
-  unconditionalAccess: Role[]; // Roles who may unconditionally access data
-  conditionalAccess: DataAccess<T>; // authorization based on role and returned data
+  unauthorizedAccess?: Role[]; // Roles that are not allowed to access the data
+  unconditionalAccess?: Role[]; // Roles who may unconditionally access data
+  conditionalAccess?: DataAccess<T>; // authorization based on role and returned data
 }
 
 // permissions for CRUD operations on T
@@ -22,7 +23,7 @@ export interface CrudAccessPragma<T> {
   read?: Permission<T>;
   readMany?: Role[];
   update?: Permission<T>;
-  delete?: Role[];
+  delete?: Permission<T>;
 }
 
 // Permissions for Seeding pools on T
@@ -43,6 +44,8 @@ export interface ComputedValue {
   compute: (request: any) => Promise<string | number | object>;
 }
 
+export type OnSuccess<T> = (data: T) => Promise<void>;
+
 // describes an interface to a table ( excuse the context overlap of 'interface' )
 export default interface CrudInterface<T extends Table> {
   name: string;
@@ -55,4 +58,5 @@ export default interface CrudInterface<T extends Table> {
   hiddenFields?: HiddenFields;
   relations?: string[]; // foreign keys
   seed?: SeedAccessPragma[];
+  onCreateSuccess?: OnSuccess<T>;
 }

@@ -33,7 +33,18 @@ const user: CrudInterface<User> = {
       unconditionalAccess: ["SUPER_USER", "ADMIN_USER"],
       conditionalAccess: (data, user) => AccessingOwn(data, user, "modify"), // only allow mutation of own data
     },
-    delete: ["SUPER_USER"],
+    delete: {
+      unauthorizedAccess: ["ADMIN_USER", "BASIC_USER"],
+      conditionalAccess: (data, _) => {
+        return data.role === "SUPER_USER"
+          ? {
+              success: false,
+              message:
+                "Although you are powerful, you are not all powerful! SUPER_USERS may not be deleted",
+            }
+          : { success: true, message: "ok" };
+      },
+    },
   },
   immutables: {
     SUPER_USER: ["role"],
