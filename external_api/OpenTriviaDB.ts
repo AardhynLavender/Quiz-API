@@ -78,8 +78,8 @@ export const GetQuestions = async (
   const queries = [
     amount ? `amount=${amount}` : "",
     categoryKey ? `category=${categoryKey}` : "",
-    difficulty ? `difficulty=${difficulty}` : "",
-    type ? `type=${type}` : "",
+    difficulty && difficulty !== "mixed" ? `difficulty=${difficulty}` : "",
+    type && type != "mixed" ? `type=${type}` : "",
   ].join("&");
   const response = await axios.get<OpenTriviaQuestionsResponse>(
     `https://opentdb.com/api.php?${queries}`

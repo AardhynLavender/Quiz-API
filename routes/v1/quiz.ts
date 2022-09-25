@@ -7,7 +7,14 @@ import { GetQuestions } from "../../external_api/OpenTriviaDB";
 const user: CrudInterface<Quiz> = {
   name: "Quiz",
   model: Prisma.quiz,
-  schema: ["name", "start_date", "end_date", "category", "difficulty", "type"],
+  schema: [
+    "name",
+    "start_date",
+    "end_date",
+    "category_type",
+    "difficulty_type",
+    "question_type",
+  ],
   unique: ["name"],
   accessPragma: {
     create: [Role.ADMIN_USER, Role.SUPER_USER],
@@ -38,11 +45,9 @@ const user: CrudInterface<Quiz> = {
       data.question_type as any
     );
 
-    if (!questions) throw new Error("Could not create questions for quiz!");
-
     for (const q of questions) {
       const {
-        question: name,
+        question,
         category,
         type,
         difficulty,
@@ -52,7 +57,7 @@ const user: CrudInterface<Quiz> = {
 
       await Prisma.question.create({
         data: {
-          question: name,
+          question,
           quiz_id: data.id,
           difficulty_type: difficulty,
           category_type: category,
