@@ -316,7 +316,6 @@ const CreateDeleteRequest =
           .json({ msg: "No user found! Have you logged in?" });
 
       const { role } = user;
-      console.log(role);
 
       // Unauthorized Access Authorization
       if (unauthorizedAccess && unauthorizedAccess?.includes(role))
