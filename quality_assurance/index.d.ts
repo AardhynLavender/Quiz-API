@@ -14,5 +14,5 @@ interface UserSharedData {
 
 interface Response {
   status: number;
-  body: unknown;
+  body: any;
 }

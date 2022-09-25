@@ -6,7 +6,8 @@ import { UserSeed } from "quality_assurance";
 import { SeedUser } from "./util/user";
 
 export const ClearDatabase = async () => {
-  await Prisma["user"].deleteMany();
+  await Prisma.user.deleteMany();
+  await Prisma.quiz.deleteMany();
 };
 
 before((done) => {
@@ -24,10 +25,10 @@ before((done) => {
 });
 
 after((done) => {
-  ClearDatabase()
-    .then(() => {
-      Actor.close();
-      done();
-    })
-    .catch(done);
+  // ClearDatabase()
+  // .then(() => {
+  Actor.close();
+  done();
+  // })
+  // .catch(done);
 });
