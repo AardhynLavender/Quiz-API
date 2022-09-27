@@ -22,7 +22,7 @@ describe("Quiz Creation", () => {
   const ONE_DAY = 1;
   const QUIZ_CREATION_SUCCESS = "Successfully created Quiz";
   const CreateDateSet = (start_date = new Date(), difference = ONE_DAY) => {
-    const end_date = start_date;
+    const end_date = new Date(start_date.getTime());
     end_date.setDate(start_date.getDate() + difference);
     return [start_date, end_date];
   };
@@ -74,41 +74,29 @@ describe("Quiz Creation", () => {
             });
         });
     });
-  it("Fails to create a quiz with too short a name", (done) => {
-    const [start_date, end_date] = CreateDateSet();
-    Actor.post(Url("quizzes"))
-      .set(SharedData.Auth)
-      .send({
-        name: `quiz`,
-        start_date,
-        end_date,
-      })
-      .end((_, res) => {
-        AssertStandardResponse(res, Code.BAD_REQUEST);
-        chai
-          .expect(res.body.msg)
-          .to.equal(`Name must be at least 5 characters`);
-        done();
-      });
-  });
-  // TODO: make the following 3 tests DRY
-  it("Fails to create a quiz with too long a name", (done) => {
-    const [start_date, end_date] = CreateDateSet();
-    Actor.post(Url("quizzes"))
-      .set(SharedData.Auth)
-      .send({
-        name: `Supercalifragilisticexpialidocious`,
-        start_date,
-        end_date,
-      })
-      .end((_, res) => {
-        AssertStandardResponse(res, Code.BAD_REQUEST);
-        chai
-          .expect(res.body.msg)
-          .to.equal(`Name must be at less than 30 characters`);
-        done();
-      });
-  });
+  for (const [invalidQuizName, adjective] of [
+    ["quiz", "short"],
+    ["supercalifragilisticexpialidocious", "long"],
+  ])
+    it(`Fails to create a quiz with too ${adjective} a name`, (done) => {
+      const [start_date, end_date] = CreateDateSet();
+      Actor.post(Url("quizzes"))
+        .set(SharedData.Auth)
+        .send({
+          name: invalidQuizName,
+          start_date,
+          end_date,
+        })
+        .end((_, res) => {
+          AssertStandardResponse(res, Code.BAD_REQUEST);
+          chai
+            .expect(res.body.msg)
+            .to.equal(
+              "`Name` must be between `5` and `30` characters inclusive"
+            );
+          done();
+        });
+    });
   it("Fails to create a quiz with a title including non-alphanumeric characters", (done) => {
     const [start_date, end_date] = CreateDateSet();
     Actor.post(Url("quizzes"))
@@ -156,7 +144,7 @@ describe("Quiz Creation", () => {
         AssertStandardResponse(res, Code.BAD_REQUEST);
         chai
           .expect(res.body.msg)
-          .to.equal("Start date must be greater than today");
+          .to.equal("`Start Date` must be in the future");
         done();
       });
   });
@@ -173,7 +161,7 @@ describe("Quiz Creation", () => {
         AssertStandardResponse(res, Code.BAD_REQUEST);
         chai
           .expect(res.body.msg)
-          .to.equal("End date must be less than the start date");
+          .to.equal("A quiz cannot end before it starts");
         done();
       });
   });
@@ -199,7 +187,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Second Quiz`,
+        name: `${SuperUser.first_name}'s Fifth Quiz`,
         start_date,
         end_date,
         amount: 11,
@@ -217,7 +205,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Second Quiz`,
+        name: `${SuperUser.first_name}'s Sixth Quiz`,
         start_date,
         end_date,
         amount: 9,
@@ -235,7 +223,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Fifth Quiz`,
+        name: `${SuperUser.first_name}'s seventh Quiz`,
         start_date,
         end_date,
         difficulty_type: "I'm to young to die!",
@@ -256,7 +244,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Seventh Quiz`,
+        name: `${SuperUser.first_name}'s Eighth Quiz`,
         start_date,
         end_date,
         category_type: "advanced quantum physics",
@@ -276,7 +264,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Eighth Quiz`,
+        name: `${SuperUser.first_name}'s Ninth Quiz`,
         start_date,
         end_date,
         question_type: "matrix",

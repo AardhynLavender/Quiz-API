@@ -10,8 +10,10 @@ import {
   Immutability,
   OnSuccess,
   Table,
+  ValidatedField,
 } from "../../types/generic";
 import { Crud } from "../../types/crud";
+import { Pluralize } from "../../util/string";
 
 /**
  * Creates and unauthorized response
@@ -165,6 +167,7 @@ const CreatePostRequest =
     schema: Array<string>,
     hiddenFields?: HiddenFields,
     access?: Role[],
+    validators?: ValidatedField<T>[],
     onCreateSuccess?: OnSuccess<T>
   ): RequestHandler =>
   async (req, res) => {
@@ -176,8 +179,26 @@ const CreatePostRequest =
         if (!authorized) return Unauthorized(res, Crud.DELETION);
       }
 
-      // Creation
-      const attributes = ReduceToSchema(schema, req.body);
+      // TODO: type ReduceToSchema with generics
+
+      // extraction
+      const attributes: Record<keyof T, any> = ReduceToSchema(
+        schema,
+        req.body
+      ) as any;
+
+      // Validation
+      if (validators) {
+        for (const v of validators) {
+          const { validator, message } = v;
+          if (!validator(attributes))
+            return res.status(Code.BAD_REQUEST).json({
+              msg: message ?? `An invalid value was provided!`,
+            });
+        }
+      }
+
+      // creation
       const record = await model.create({
         data: { ...attributes },
       });

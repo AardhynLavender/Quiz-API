@@ -4,7 +4,7 @@ import axios from "axios";
 import { GetUser } from "./auth";
 import { Role } from "@prisma/client";
 import { Environment } from "../../util/environment";
-import { ComputedValue } from "../../types/generic";
+import { ComputedField } from "../../types/generic";
 
 const CreateSeedRequest =
   (
@@ -12,7 +12,7 @@ const CreateSeedRequest =
     table: string,
     access: Role[],
     unique: (string | number)[],
-    computed?: ComputedValue[],
+    computed?: ComputedField[],
     filename?: string
   ): RequestHandler =>
   async (req, res) => {

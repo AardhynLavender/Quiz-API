@@ -19,6 +19,7 @@ const CreateRouter = <T extends Table>({
   unique,
   accessPragma,
   computed,
+  validated,
   immutables,
   relations,
   hiddenFields,
@@ -124,6 +125,7 @@ const CreateRouter = <T extends Table>({
             schema,
             hiddenFields,
             createAccess,
+            validated,
             onCreateSuccess
           )
         : CreateVoidRoute(Crud.CREATION, name)

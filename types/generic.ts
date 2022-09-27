@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 
 import { Quiz, Role, Submission, User } from "@prisma/client";
-import { Request } from "express";
 export type Table = User | Quiz | Submission;
 
 export interface Authorization {
@@ -38,8 +37,13 @@ export type HiddenFields = Record<string, string>;
 // Fields that cannot be changed
 export type Immutability = Record<Role, string[]>;
 
+export interface ValidatedField<T extends Table> {
+  validator: (fields: Record<keyof T, any>) => boolean;
+  message?: string;
+}
+
 // fields from the schema that are computed rather than extracted from a request
-export interface ComputedValue {
+export interface ComputedField {
   name: string;
   compute: (request: any) => Promise<string | number | object>;
 }
@@ -52,7 +56,8 @@ export default interface CrudInterface<T extends Table> {
   model: any; // eek! explicit any!
   schema: string[];
   unique: (string | number)[];
-  computed?: ComputedValue[];
+  computed?: ComputedField[];
+  validated?: ValidatedField[];
   accessPragma: CrudAccessPragma<T>; // CRUD access permissions
   immutables?: Immutability;
   hiddenFields?: HiddenFields;
