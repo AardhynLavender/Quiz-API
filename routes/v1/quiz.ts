@@ -10,6 +10,7 @@ const CreateQuestions = async ({
   category_type,
   difficulty_type,
   question_type,
+  question_count,
 }: Quiz) => {
   if (
     difficulty_type !== "mixed" &&
@@ -25,7 +26,7 @@ const CreateQuestions = async ({
 
   // create questions for the quiz
   const questions = await GetQuestions(
-    10,
+    question_count,
     category_type,
     difficulty_type as any,
     question_type as any
@@ -65,6 +66,11 @@ const CreateQuestions = async ({
   }
 };
 
+const QUESTIONS = 10;
+const MAX_QUIZ_LENGTH = 5;
+const NAME_MIN_LENGTH = 5;
+const NAME_MAX_LENGTH = 30;
+
 const DifferenceInDays = (date1: Date, date2: Date) => {
   const diffMs = Math.abs(date2.getTime() - date1.getTime());
   return diffMs / (1000 * 60 * 60 * 24);
@@ -74,9 +80,13 @@ const quizValidators: ValidatedField<Quiz>[] = [
   {
     validator: ({ name }) => {
       const { length } = name as string;
-      return typeof name === "string" && length > 4 && length < 31;
+      return (
+        typeof name === "string" &&
+        length >= NAME_MIN_LENGTH &&
+        length <= NAME_MAX_LENGTH
+      );
     },
-    message: "`Name` must be between `5` and `30` characters inclusive",
+    message: `\`Name\` must be between \`${NAME_MIN_LENGTH}\` and \`${NAME_MAX_LENGTH}\` characters inclusive`,
   },
   {
     validator: ({ start_date }) => {
@@ -100,9 +110,14 @@ const quizValidators: ValidatedField<Quiz>[] = [
     validator: ({ start_date, end_date }) => {
       const endDate = new Date(end_date);
       const startDate = new Date(start_date);
-      return DifferenceInDays(startDate, endDate) <= 5;
+      return DifferenceInDays(startDate, endDate) <= MAX_QUIZ_LENGTH;
     },
-    message: "Quiz length must not exceed 5 days",
+    message: `Quiz length must not exceed \`${MAX_QUIZ_LENGTH}\` days`,
+  },
+  {
+    validator: ({ question_count }) =>
+      !question_count || question_count === QUESTIONS,
+    message: `A quiz must have \`${QUESTIONS}\` questions`,
   },
 ];
 
@@ -116,6 +131,7 @@ const user: CrudInterface<Quiz> = {
     "category_type",
     "difficulty_type",
     "question_type",
+    "question_count",
   ],
   validated: quizValidators,
   unique: ["name"],

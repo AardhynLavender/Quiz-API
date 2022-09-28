@@ -165,7 +165,7 @@ describe("Quiz Creation", () => {
         done();
       });
   });
-  it("Fails to create a quiz longer than 5 days", (done) => {
+  it("Fails to create a quiz longer than `5` days", (done) => {
     const [start_date, end_date] = CreateDateSet(new Date(), 20);
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
@@ -178,46 +178,30 @@ describe("Quiz Creation", () => {
         AssertStandardResponse(res, Code.BAD_REQUEST);
         chai
           .expect(res.body.msg)
-          .to.equal("Quiz length must not exceed 5 days");
+          .to.equal("Quiz length must not exceed `5` days");
         done();
       });
   });
-  it("Fails to create a quiz with more than 10 questions", (done) => {
-    const [start_date, end_date] = CreateDateSet();
-    Actor.post(Url("quizzes"))
-      .set(SharedData.Auth)
-      .send({
-        name: `${SuperUser.first_name}'s Fifth Quiz`,
-        start_date,
-        end_date,
-        amount: 11,
-      })
-      .end((_, res) => {
-        AssertStandardResponse(res, Code.BAD_REQUEST);
-        chai
-          .expect(res.body.msg)
-          .to.equal("A quiz must have less than 11 questions");
-        done();
-      });
-  });
-  it("Fails to create a quiz with less than 10 questions", (done) => {
-    const [start_date, end_date] = CreateDateSet();
-    Actor.post(Url("quizzes"))
-      .set(SharedData.Auth)
-      .send({
-        name: `${SuperUser.first_name}'s Sixth Quiz`,
-        start_date,
-        end_date,
-        amount: 9,
-      })
-      .end((_, res) => {
-        AssertStandardResponse(res, Code.BAD_REQUEST);
-        chai
-          .expect(res.body.msg)
-          .to.equal("A quiz must have more than 9 questions");
-        done();
-      });
-  });
+  for (const [invalidAmount, adjective] of [
+    [11, "more"],
+    [9, "less"],
+  ])
+    it(`Fails to create a quiz with ${adjective} than 10 questions`, (done) => {
+      const [start_date, end_date] = CreateDateSet();
+      Actor.post(Url("quizzes"))
+        .set(SharedData.Auth)
+        .send({
+          name: `${SuperUser.first_name}'s Fifth Quiz`,
+          start_date,
+          end_date,
+          question_count: invalidAmount,
+        })
+        .end((_, res) => {
+          AssertStandardResponse(res, Code.BAD_REQUEST);
+          chai.expect(res.body.msg).to.equal("A quiz must have `10` questions");
+          done();
+        });
+    });
   it("Fails to create a quiz with an invalid difficulty", (done) => {
     const [start_date, end_date] = CreateDateSet();
     Actor.post(Url("quizzes"))

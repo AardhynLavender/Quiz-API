@@ -92,6 +92,7 @@ model Quiz {
   difficulty_type String       @default("mixed")
   question_type   String       @default("mixed")
   category_type   String       @default("mixed")
+  question_count  Int          @default(10)
   difficulty      Difficulty   @relation(fields: [difficulty_type], references: [name], onDelete: Cascade, onUpdate: Cascade) // difficulty of questions or mixed
   type            Type         @relation(fields: [question_type], references: [name], onDelete: Cascade, onUpdate: Cascade) // type of questions or mixed
   category        Category     @relation(fields: [category_type], references: [name], onDelete: Cascade, onUpdate: Cascade) // category of questions or mixed
