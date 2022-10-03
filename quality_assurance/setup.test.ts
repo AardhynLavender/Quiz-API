@@ -11,12 +11,16 @@ export const ClearDatabase = async () => {
 };
 
 before((done) => {
+  console.log("Pre-test: Clearing Database");
   ClearDatabase()
     .then(() => {
       SeedUser(AdminUser as UserSeed)
         .then(() => {
           SeedUser(SuperUser as UserSeed)
-            .then(done)
+            .then(() => {
+              console.log("\tSuccess!");
+              done();
+            })
             .catch(done);
         })
         .catch(done);
@@ -25,10 +29,12 @@ before((done) => {
 });
 
 after((done) => {
-  // ClearDatabase()
-  // .then(() => {
-  Actor.close();
-  done();
-  // })
-  // .catch(done);
+  console.log("post-test: clearing database");
+  ClearDatabase()
+    .then(() => {
+      Actor.close();
+      console.log("\tSuccess!");
+      done();
+    })
+    .catch(done);
 });
