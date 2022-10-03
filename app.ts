@@ -9,7 +9,7 @@ import {
   EnvironmentVariable,
 } from "./util/environment";
 
-console.log("\nChecking local ENV...");
+console.log("\nChecking local ENV");
 for (const variable of [
   "DATABASE_URL",
   "SHADOW_DATABASE_URL",
@@ -21,7 +21,7 @@ for (const variable of [
   "NODE_ENV",
 ] as EnvironmentVariable[])
   AssertEnvironmentVariable(variable);
-console.log("...Checks complete!");
+console.log("Checks complete!\n");
 
 // EXPRESS
 
@@ -80,6 +80,10 @@ CreateRoute(app, User, "users");
 import Quiz from "./routes/v1/quiz";
 CreateRoute(app, Quiz, "quizzes");
 
+// Submission
+import Submission from "./routes/v1/submission";
+CreateRoute(app, Submission, "submissions");
+
 // Root
 import listEndpoints from "express-list-endpoints";
 import Root from "./routes/v1/root";
@@ -94,15 +98,25 @@ CreateRoute(app, root, "", SKIP_MIDDLEWARE, false);
 import CreateDefaultRoute from "./routes/v1/defaultRoute";
 CreateDefaultRoute(app, "No handler is available for the provided URL");
 
+import {
+  SeedCategories,
+  SeedDifficulties,
+  SeedTypes,
+} from "./seeding/implicit";
 (async () => {
   try {
     const PORT = Environment.PORT;
 
+    // seed implicit data from Open Trivia DB
+    await SeedCategories();
+    await SeedDifficulties();
+    await SeedTypes();
+
     app.listen(PORT, (): void => {
-      console.log(`Server is listening on port ${PORT}`);
+      console.log(`\nServer is listening on port ${PORT}`);
     });
   } catch (error: unknown) {
-    console.error("Failed to start server!");
+    console.error("\nFailed to start server!");
     console.error(error);
   }
 })();

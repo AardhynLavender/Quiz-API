@@ -39,7 +39,7 @@ model User {
   profile_picture_uri String
   role                Role         @default(BASIC_USER)
   Submission          Submission[]
-  Outcome             Result[]
+  outcome             Result[]
 }
 
 model Category {
@@ -63,11 +63,12 @@ model Difficulty {
 }
 
 model Answer {
-  id          Int      @id @default(autoincrement())
+  id          Int                  @id @default(autoincrement())
   text        String
   correct     Boolean
-  Question_id Int
-  Question    Question @relation(fields: [Question_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  question_id Int
+  submissions QuestionSubmission[]
+  question    Question             @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Question {
@@ -100,6 +101,14 @@ model Quiz {
   submissions     Submission[]
 }
 
+model QuestionSubmission {
+  id            Int        @id @default(autoincrement())
+  answer_id     Int
+  submission_id Int
+  answer        Answer     @relation(fields: [answer_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  submission    Submission @relation(fields: [submission_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model Result {
   id             Int    @id @default(autoincrement())
   quiz_id        Int    @unique
@@ -110,11 +119,12 @@ model Result {
 }
 
 model Submission {
-  id        Int    @id @default(autoincrement())
-  user_id   Int    @unique
-  quiz_name String @unique
-  score     Int    @default(0)
-  rating    Rating
-  quiz      Quiz   @relation(fields: [quiz_name], references: [name], onDelete: Cascade, onUpdate: Cascade)
-  user      User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                   Int                  @id @default(autoincrement())
+  user_id              Int
+  quiz_id              Int
+  score                Int                  @default(0)
+  question_submissions QuestionSubmission[]
+  rating               Rating
+  quiz                 Quiz                 @relation(fields: [quiz_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user                 User                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

@@ -191,7 +191,8 @@ const CreatePostRequest =
       if (validators) {
         for (const v of validators) {
           const { validator, message } = v;
-          if (!validator(attributes))
+          const valid = await validator(attributes);
+          if (!valid)
             return res.status(Code.BAD_REQUEST).json({
               msg: message ?? `An invalid value was provided!`,
             });

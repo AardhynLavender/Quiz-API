@@ -38,7 +38,7 @@ export type HiddenFields = Record<string, string>;
 export type Immutability = Record<Role, string[]>;
 
 export interface ValidatedField<T extends Table> {
-  validator: (fields: Record<keyof T, any>) => boolean;
+  validator: (fields: Record<keyof T, any>) => Promise<boolean> | boolean;
   message?: string;
 }
 
@@ -57,7 +57,7 @@ export default interface CrudInterface<T extends Table> {
   schema: string[];
   unique: (string | number)[];
   computed?: ComputedField[];
-  validated?: ValidatedField[];
+  validated?: ValidatedField<T>[];
   accessPragma: CrudAccessPragma<T>; // CRUD access permissions
   immutables?: Immutability;
   hiddenFields?: HiddenFields;

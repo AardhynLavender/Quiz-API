@@ -66,7 +66,7 @@ const CreateQuestions = async ({
   }
 };
 
-const QUESTIONS = 10;
+export const QUESTIONS = 10;
 const MAX_QUIZ_LENGTH = 5;
 const NAME_MIN_LENGTH = 5;
 const NAME_MAX_LENGTH = 30;
@@ -121,7 +121,7 @@ const quizValidators: ValidatedField<Quiz>[] = [
   },
 ];
 
-const user: CrudInterface<Quiz> = {
+const quiz: CrudInterface<Quiz> = {
   name: "Quiz",
   model: Prisma.quiz,
   schema: [
@@ -145,4 +145,4 @@ const user: CrudInterface<Quiz> = {
   onCreateSuccess: CreateQuestions,
 };
 
-export default CreateRouter(user);
+export default CreateRouter(quiz);
