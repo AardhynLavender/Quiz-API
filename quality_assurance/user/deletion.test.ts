@@ -52,8 +52,8 @@ describe("User Deletion", () => {
         done();
       });
   });
-  it("BASIC_USER is unable to delete another user", (done) => {
-    for (const id in [SharedData.AdminUserId, SharedData.SuperUserId])
+  for (const id in [SharedData.AdminUserId, SharedData.SuperUserId])
+    it("BASIC_USER is unable to delete another user", (done) => {
       Actor.delete(Url(`users/${id}`))
         .set(SharedData.Auth)
         .end((_, res) => {
@@ -63,7 +63,7 @@ describe("User Deletion", () => {
           chai.expect(data).to.be.undefined;
           done();
         });
-  });
+    });
   it("SUPER_USER is unable to delete another SUPER_USER", (done) => {
     // seed another super user here... rather than test against self
     Actor.post(Url("auth/login"))
