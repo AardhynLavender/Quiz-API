@@ -11,17 +11,18 @@ const ReduceToSchema = (
   body: any
 ): Record<string, string | number | object> =>
   schema.reduce((attributes, field) => {
-    const valueUntyped = body[field];
-    const value: number | undefined = parseInt(valueUntyped);
     return {
       ...attributes,
-      [field]: Date.parse(valueUntyped)
-        ? new Date(valueUntyped)
-        : isNaN(value)
-        ? (valueUntyped as string) //eslint-disable-line no-extra-parens
-        : (value as number), //eslint-disable-line no-extra-parens
+      [field]: ParseString(body[field]),
     };
   }, {});
+
+const ParseString = (value: string | number): number | Date | string => {
+  if (typeof value === "string") {
+    const date = Date.parse(value);
+    return !isNaN(Date.parse(value)) ? new Date(date) : value;
+  } else return value;
+};
 
 /**
  * creates an include object for prisma
