@@ -2,14 +2,20 @@ import { Question, Role } from "@prisma/client";
 import CrudInterface from "../../types/generic";
 import Prisma from "../../util/prismaConfig";
 import CreateRouter from "./generic";
-import { Immutability } from "../../types/generic";
 
 const question: CrudInterface<Question> = {
   name: "Question",
   model: Prisma.question,
   schema: [],
   unique: ["id"],
-  relations: ["answers"],
+  relations: {
+    answers: {
+      select: {
+        text: true,
+        id: true,
+      },
+    },
+  },
   accessPragma: {
     create: undefined,
     read: {

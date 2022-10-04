@@ -61,7 +61,7 @@ export default interface CrudInterface<T extends Table> {
   accessPragma: CrudAccessPragma<T>; // CRUD access permissions
   immutables?: Immutability;
   hiddenFields?: HiddenFields;
-  relations?: string[]; // foreign keys
+  relations?: object; // foreign keys
   seed?: SeedAccessPragma[];
   onCreateSuccess?: OnSuccess<T>;
 }

@@ -24,15 +24,4 @@ const ParseString = (value: string | number): number | Date | string => {
   } else return value;
 };
 
-/**
- * creates an include object for prisma
- * @param joins array of tables to include
- * @returns an include object
- */
-const IncludeRelations = (
-  joins: Array<string>
-): { include: Record<string, boolean> } => ({
-  include: joins.reduce((acc, table) => ({ ...acc, [table]: true }), {}),
-});
-
-export { ReduceToSchema, IncludeRelations };
+export { ReduceToSchema };

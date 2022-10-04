@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client";
 import { ReturnError as Error } from "./error";
 import { Code, RequestHandler } from "../../types/http";
-import { IncludeRelations, ReduceToSchema } from "../../util/schema";
+import { ReduceToSchema } from "../../util/schema";
 import { Authorize, GetUser } from "./auth";
 import { Response } from "express";
 import {
@@ -13,7 +13,6 @@ import {
   ValidatedField,
 } from "../../types/generic";
 import { Crud } from "../../types/crud";
-import { Pluralize } from "../../util/string";
 
 /**
  * Creates and unauthorized response
@@ -61,7 +60,7 @@ const CreateGetRequest = <T extends Table>(
   model: any,
   table: string,
   hiddenFields?: HiddenFields,
-  relations?: Array<string>,
+  relations?: object,
   unauthorizedAccess?: Role[],
   access?: Role[],
   dataAccess?: DataAccess<T>,
@@ -84,7 +83,7 @@ const CreateGetRequest = <T extends Table>(
 
           // Reading
           const data = await model.findMany(
-            relations ? IncludeRelations(relations) : {}
+            relations ? { include: relations } : {}
           );
           if (!data.length)
             return res.status(Code.SUCCESS).json({ msg: `No ${table}s found` });
