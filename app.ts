@@ -84,6 +84,10 @@ CreateRoute(app, Quiz, "quizzes");
 import Submission from "./routes/v1/submission";
 CreateRoute(app, Submission, "submissions");
 
+// Question
+import Question from "./routes/v1/question";
+CreateRoute(app, Question, "questions");
+
 // Root
 import listEndpoints from "express-list-endpoints";
 import Root from "./routes/v1/root";

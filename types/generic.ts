@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
-import { Quiz, Role, Submission, User } from "@prisma/client";
-export type Table = User | Quiz | Submission;
+import { Question, Quiz, Role, Submission, User } from "@prisma/client";
+export type Table = User | Quiz | Submission | Question;
 
 export interface Authorization {
   success: boolean;

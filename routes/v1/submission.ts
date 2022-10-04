@@ -95,7 +95,7 @@ const submission: CrudInterface<Submission> = {
           return false;
         }
       },
-      message: "No quiz found with that name!",
+      message: "No quiz found with that id!",
     },
     {
       validator: async ({ quiz_id }) => {
