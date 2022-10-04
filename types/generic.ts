@@ -55,6 +55,7 @@ export default interface CrudInterface<T extends Table> {
   name: string;
   model: any; // eek! explicit any!
   schema: string[];
+  nestedWriteSchema?: string[];
   unique: (string | number)[];
   computed?: ComputedField[];
   validated?: ValidatedField<T>[];

@@ -4,3 +4,9 @@ export enum Crud {
   UPDATE = "modification",
   DELETION = "deletion",
 }
+
+export interface NestedWrite {
+  [x: string]: {
+    create: NestedWrite | object;
+  };
+}

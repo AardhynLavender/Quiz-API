@@ -4,6 +4,7 @@ import { Rating, Role, Submission } from "@prisma/client";
 import CreateRouter from "./generic";
 import { QUESTIONS } from "./quiz";
 import { Pluralize } from "../../util/string";
+import { NestedWrite } from "../../types/crud";
 
 const RatingLegend: Record<Rating, number> = {
   ONE: 1,
@@ -82,6 +83,9 @@ const submission: CrudInterface<Submission> = {
   model: Prisma.submission,
   schema: ["quiz_id", "user_id", "rating"],
   unique: ["quiz_id", "user_id"],
+  relations: {
+    question_submissions: { select: { answer: { select: { text: true } } } },
+  },
   validated: [
     {
       validator: async ({ quiz_id }) => {
@@ -112,10 +116,11 @@ const submission: CrudInterface<Submission> = {
     },
     {
       validator: async ({ id }) => {
-        const questionSubmissions = await Prisma.questionSubmission.findMany({
-          where: { submission_id: id },
-        });
-        return questionSubmissions.length === QUESTIONS;
+        // const questionSubmissions = await Prisma.questionSubmission.findMany({
+        //   where: { submission_id: id },
+        // });
+        // return questionSubmissions.length === QUESTIONS;
+        return true;
       },
       message: `All \`${QUESTIONS}\` ${Pluralize(
         "question",
@@ -123,6 +128,7 @@ const submission: CrudInterface<Submission> = {
       )} must be answered!`,
     },
   ],
+  nestedWriteSchema: ["question_submissions"],
   accessPragma: {
     create: [Role.BASIC_USER, Role.ADMIN_USER, Role.SUPER_USER],
     read: {

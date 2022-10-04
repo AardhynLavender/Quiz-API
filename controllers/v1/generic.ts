@@ -12,7 +12,7 @@ import {
   Table,
   ValidatedField,
 } from "../../types/generic";
-import { Crud } from "../../types/crud";
+import { Crud, NestedWrite } from "../../types/crud";
 
 /**
  * Creates and unauthorized response
@@ -164,6 +164,7 @@ const CreatePostRequest =
     model: any,
     table: string,
     schema: Array<string>,
+    nestedWriteSchema?: Array<string>,
     hiddenFields?: HiddenFields,
     access?: Role[],
     validators?: ValidatedField<T>[],
@@ -198,12 +199,22 @@ const CreatePostRequest =
         }
       }
 
-      // creation
+      // Nested Write Extraction ( `CreateOrConnect` not currently supported )
+      const nestedWrites: NestedWrite =
+        nestedWriteSchema?.reduce((record, key) => {
+          const write = req.body[key];
+          return {
+            ...record,
+            ...(typeof write === "object" && { [key]: { create: write } }),
+          };
+        }, {}) ?? {};
+
+      // Creation
       const record = await model.create({
-        data: { ...attributes },
+        data: { ...attributes, ...nestedWrites },
       });
 
-      // user defined success handler
+      // User defined success handler
       try {
         if (onCreateSuccess) await onCreateSuccess(record);
       } catch (e) {
