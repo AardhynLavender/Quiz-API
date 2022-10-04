@@ -8,9 +8,4 @@ interface Credentials {
   role: string;
 }
 
-interface User extends JwtPayload {
-  id: string;
-  name: string;
-}
-
-export { Credentials, User };
+export { Credentials };

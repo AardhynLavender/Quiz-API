@@ -14,8 +14,7 @@ for (const variable of [
   "DATABASE_URL",
   "SHADOW_DATABASE_URL",
   "PORT",
-  "JWT_SECRET",
-  "JWT_LIFETIME",
+  "SESSION_LIFETIME",
   "SEED_GIST_HASH",
   "GITHUB_USERNAME",
   "NODE_ENV",
@@ -69,8 +68,9 @@ import CreateRoute from "./routes/v1/route";
 
 // Auth
 import { SKIP_MIDDLEWARE } from "./api";
-import Authentication from "./routes/v1/auth";
-CreateRoute(app, Authentication, "auth", SKIP_MIDDLEWARE);
+import { authRouter, sessionRouter } from "./routes/v1/auth";
+CreateRoute(app, authRouter, "auth", SKIP_MIDDLEWARE);
+CreateRoute(app, sessionRouter, "auth");
 
 // User
 import User from "./routes/v1/user";

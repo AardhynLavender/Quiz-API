@@ -29,6 +29,13 @@ enum Rating {
 
 // MODELS //
 
+model Session {
+  key        String   @id @default(uuid())
+  user_id    Int      @unique
+  expires_at DateTime
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model User {
   id                  Int          @id @default(autoincrement())
   first_name          String
@@ -40,6 +47,7 @@ model User {
   role                Role         @default(BASIC_USER)
   Submission          Submission[]
   outcome             Result[]
+  session             Session[]
 }
 
 model Category {

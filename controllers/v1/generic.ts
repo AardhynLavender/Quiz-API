@@ -69,13 +69,7 @@ const CreateGetRequest = <T extends Table>(
   return many
     ? async (req, res) => {
         try {
-          const user = await GetUser(req.user?.id);
-          if (!user)
-            return res
-              .status(Code.UNAUTHORIZED)
-              .json({ msg: "No user found! Have you logged in?" });
-
-          const { role } = user; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          const { role } = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
           // Unconditional Access
           if (access && !access.includes(role))
@@ -173,9 +167,9 @@ const CreatePostRequest =
   async (req, res) => {
     try {
       // Authorization
-      const { id: userId } = req.user ?? { id: undefined };
+      const { id } = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
       if (access) {
-        const authorized = await Authorize(userId, access);
+        const authorized = await Authorize(id, access);
         if (!authorized) return Unauthorized(res, Crud.DELETION);
       }
 
@@ -258,20 +252,14 @@ const CreatePutRequest =
   async (req, res) => {
     try {
       // Authorization
-      const user = await GetUser(req.user?.id);
-      if (!user)
-        return res
-          .status(Code.UNAUTHORIZED)
-          .json({ msg: "No user found! Have you logged in?" });
-
-      const { role } = user;
+      const user = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
       // Data Extraction
       const { id } = req.params;
       const attributes = ReduceToSchema(schema, req.body);
 
       // Immutability Validation
-      const immutables: string[] | undefined = immutability?.[role as Role];
+      const immutables: string[] | undefined = immutability?.[user.role];
       if (immutables) {
         const immutabilityCrimes = Object.keys(attributes).filter(
           (attribute) => attributes[attribute] && immutables.includes(attribute)
@@ -295,7 +283,7 @@ const CreatePutRequest =
       }
 
       // Authorization
-      if (!access || !access.includes(role)) {
+      if (!access || !access.includes(user.role)) {
         if (dataAccess) {
           const access = dataAccess(data, user);
           if (!access.success)
@@ -341,22 +329,16 @@ const CreateDeleteRequest =
   async (req, res) => {
     try {
       // Authorization
-      const user = await GetUser(req.user?.id);
-      if (!user)
-        return res
-          .status(Code.UNAUTHORIZED)
-          .json({ msg: "No user found! Have you logged in?" });
-
-      const { role } = user;
+      const user = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
       // Unauthorized Access Authorization
-      if (unauthorizedAccess && unauthorizedAccess?.includes(role))
+      if (unauthorizedAccess && unauthorizedAccess?.includes(user.role))
         return res.status(Code.FORBIDDEN).json({
           msg: `You do not have permission to delete this records from ${table}`,
         });
 
       // Unconditional Access Authorization
-      if (access && !access.includes(role))
+      if (access && !access.includes(user.role))
         return Unauthorized(res, Crud.DELETION);
 
       // Data Extraction

@@ -1,5 +1,5 @@
+import { User } from "@prisma/client";
 import { Response, Request, NextFunction } from "express";
-import { User } from "./credentials";
 
 // error codes
 enum Code {

@@ -6,15 +6,34 @@ import chaiHttp from "chai-http";
 import { Code } from "../types/http";
 
 import { RetrieveToken, StoreToken } from "./util/session";
-import { AssertStandardResponse } from "./util/assertion";
+import {
+  AssertInvalidAuthorizationResponse,
+  AssertStandardResponse,
+} from "./util/assertion";
 chai.use(chaiHttp);
+
+const login = Url("auth/login");
+const ShouldLogin = (assertion: string) =>
+  it(assertion, (done) => {
+    Actor.post(login)
+      .send(BasicUser)
+      .end((_, res) => {
+        const { body } = res;
+        AssertStandardResponse(res);
+        chai.expect(body).to.have.property("token");
+        chai
+          .expect(body.msg)
+          .to.equal(`${BasicUser.username} has been logged in`);
+        StoreToken(body.token);
+        done();
+      });
+  });
 
 describe("Authentication", () => {
   const messages = {
     NON_EXISTENT_USER: "A user is not registered with these credentials",
     INVALID_PASSWORD: "Invalid password/username",
   };
-  const login = Url("auth/login");
   it("should fail authentication with non-existent user", (done) => {
     Actor.post(login)
       .send(UnregisteredUser)
@@ -33,20 +52,7 @@ describe("Authentication", () => {
         done();
       });
   });
-  it("Should login with valid credentials", (done) => {
-    Actor.post(login)
-      .send(BasicUser)
-      .end((_, res) => {
-        const { body } = res;
-        AssertStandardResponse(res);
-        chai.expect(body).to.have.property("token");
-        chai
-          .expect(body.msg)
-          .to.equal(`${BasicUser.username} has been logged in`);
-        StoreToken(body.token);
-        done();
-      });
-  });
+  ShouldLogin("Should login with valid credentials");
   it("Should retrieve the token", (done) => {
     RetrieveToken()
       .then((token) => {
@@ -55,4 +61,27 @@ describe("Authentication", () => {
       })
       .catch(done);
   });
+  it("Should logout", (done) => {
+    RetrieveToken()
+      .then((token) => {
+        chai.expect(token).to.be.a("string");
+        const logout = Url("auth/logout");
+        Actor.get(logout)
+          .set({ Authorization: `Bearer ${token}` })
+          .end((_, res) => {
+            AssertStandardResponse(res);
+            chai.expect(res.body.msg).to.equal("User successfully logged out");
+            done();
+          });
+      })
+      .catch(done);
+  });
+  it("Should be unable to access authenticated routes", (done) => {
+    Actor.get(Url(`users`)).end((_, res) => {
+      AssertInvalidAuthorizationResponse(res);
+      chai.expect(res.body.data).to.be.undefined;
+      done();
+    });
+  });
+  ShouldLogin("Should be able to login again");
 });

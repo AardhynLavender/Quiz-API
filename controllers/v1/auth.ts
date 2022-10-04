@@ -2,7 +2,7 @@ import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import AssertValid, { AssertEquality } from "../../util/assertion";
-import { Code } from "../../types/http";
+import { Code, UserRequest } from "../../types/http";
 import { Environment } from "../../util/environment";
 import Prisma from "../../util/prismaConfig";
 import { Role, User } from "@prisma/client";
@@ -13,6 +13,12 @@ import { StandardHash } from "../../util/auth";
 interface UserRegistration extends User {
   confirm_password: string;
 }
+
+const SESSION_ATTEMPTS = 3;
+const SESSION_ACTIVE = "Unique constraint failed on the fields: (`user_id`)";
+
+const CreateExpiryDate = (hours: number) =>
+  new Date(Date.now() + hours * 60 * 60 * 1000);
 
 const Authorize = async (
   id: number | string | undefined,
@@ -33,18 +39,25 @@ const GetUser = async (id: number | string | undefined) => {
   return user;
 };
 
-const SECOND = 1;
-const Sign = (id: number, username: string, invalidate = false) => {
-  const token: string = jwt.sign(
-    {
-      id,
-      username,
+const RevokeSession = async (id: number) =>
+  await Prisma.session.delete({ where: { user_id: id } });
+
+const CreateSession = async (id: number) => {
+  const token = await Prisma.session.create({
+    data: {
+      user_id: id,
+      expires_at: CreateExpiryDate(parseInt(Environment.SESSION_LIFETIME)),
     },
-    Environment.JWT_SECRET,
-    { expiresIn: invalidate ? SECOND : Environment.JWT_LIFETIME }
-  );
-  return token;
+  });
+  if (!token) throw new Error("Failed to create a new session");
+  return token.key;
 };
+
+const AuthenticatedResponse = (res: Response, username: string, key: string) =>
+  res.status(Code.SUCCESS).json({
+    msg: `${username} has been logged in`,
+    token: key,
+  });
 
 const Register = async (req: Request, res: Response) => {
   try {
@@ -128,25 +141,29 @@ const Login = async (req: Request, res: Response) => {
         .status(Code.UNAUTHORIZED)
         .json({ msg: "Invalid password/username" });
 
-    const token = Sign(user.id, user.username);
-
-    return res.status(Code.SUCCESS).json({
-      msg: `${user.username} has been logged in`,
-      token: token,
-    });
-  } catch (err: any) {
-    return res.status(Code.ERROR).json({
-      msg: err.message,
-    });
+    try {
+      const token = await CreateSession(user.id);
+      return AuthenticatedResponse(res, user.username, token);
+    } catch (error: any) {
+      if (error.message.includes(SESSION_ACTIVE)) {
+        // User has already logged in, create a new session
+        await RevokeSession(user.id);
+        const token = await CreateSession(user.id);
+        return AuthenticatedResponse(res, user.username, token);
+      } else throw new Error(error);
+    }
+  } catch (error: any) {
+    return res.status(Code.ERROR).json({ msg: error.message });
   }
 };
 
-/**@deprecated*/
-const Logout = async (req: Request, res: Response) => {
+const Logout = async (req: UserRequest, res: Response) => {
   try {
-    /*
-       ...fancy token invalidation code here...
-    */
+    const id = req.user?.id;
+    if (!id) throw new Error("No user found... How did you even get in here?");
+
+    await RevokeSession(id);
+
     return res.status(Code.SUCCESS).json({
       msg: "User successfully logged out",
     });

@@ -20,7 +20,7 @@
     "seed:super_users": "ts-node ./seeding/superUserSeed.ts",
     "seed:implicit": "ts-node ./seeding/seedImplicit.ts",
     "lint:check": "npx eslint .",
-    "qa:test": "cross-env NODE_ENV=QA npx mocha --timeout 25000 --exit -r ts-node/register ./quality_assurance/index.spec.ts",
+    "qa:test": "cross-env NODE_ENV=QA npx mocha --timeout 30000 --exit -r ts-node/register ./quality_assurance/index.spec.ts",
     "qa:coverage": "cross-env NODE_ENV=QA npx c8 npm run qa:test --clean && npx c8 report --reporter=html && open-cli coverage/index.html",
     "prettier:write": "npx pretty-quick --staged",
     "prettier:check": "npx prettier --check ."
