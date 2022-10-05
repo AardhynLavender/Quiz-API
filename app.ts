@@ -88,6 +88,10 @@ CreateRoute(app, Submission, "submissions");
 import Question from "./routes/v1/question";
 CreateRoute(app, Question, "questions");
 
+// Results
+import Result from "./routes/v1/result";
+CreateRoute(app, Result, "results");
+
 // Root
 import listEndpoints from "express-list-endpoints";
 import Root from "./routes/v1/root";
