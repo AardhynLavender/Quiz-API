@@ -15,16 +15,12 @@ const RatingLegend: Record<Rating, number> = {
 };
 
 const CreateResult = async (submission: Submission) => {
-  // Fetching
+  // get answers from submission
 
   const quiz = await Prisma.quiz.findUnique({
     where: { id: submission.quiz_id },
   });
   if (!quiz) throw new Error(`Quiz '${submission.quiz_id}' not found`);
-
-  const submissions = await Prisma.submission.findMany({
-    where: { quiz_id: quiz.id },
-  });
 
   const answers = await Prisma.questionSubmission.findMany({
     where: { submission_id: submission.id },
@@ -46,13 +42,15 @@ const CreateResult = async (submission: Submission) => {
       score: correct,
     },
   });
+  const submissions = await Prisma.submission.findMany({
+    where: { quiz_id: quiz.id },
+  });
 
   // Recompute averages
 
   const average_score =
     submissions.reduce((a, b) => a + b.score, 0) / submissions.length;
 
-  // Recompute average rating
   const average_rating_int =
     submissions.reduce((a, b) => a + RatingLegend[b.rating], 0) /
     submissions.length;
@@ -60,6 +58,15 @@ const CreateResult = async (submission: Submission) => {
   const average_rating = Object.keys(RatingLegend).find(
     (key) => RatingLegend[key as Rating] === Math.round(average_rating_int)
   ) as Rating;
+
+  // determine winner
+
+  const result = await Prisma.result.findUnique({
+    where: { quiz_id: quiz.id },
+  });
+  const winner_id =
+    result?.winner_id ??
+    submissions.sort((a, b) => a.score - b.score)[0].user_id;
 
   // Upsert result for associated quiz
 
@@ -69,11 +76,12 @@ const CreateResult = async (submission: Submission) => {
       quiz_id: quiz.id,
       average_score,
       average_rating,
-      winner_id: submission.user_id,
+      winner_id,
     },
     update: {
       average_score,
       average_rating,
+      winner_id,
     },
   });
 };
@@ -115,13 +123,9 @@ const submission: CrudInterface<Submission> = {
       message: "Quiz is not available for participation!",
     },
     {
-      validator: async ({ id }) => {
-        // const questionSubmissions = await Prisma.questionSubmission.findMany({
-        //   where: { submission_id: id },
-        // });
-        // return questionSubmissions.length === QUESTIONS;
-        return true;
-      },
+      validator: async ({ question_submissions }) =>
+        question_submissions &&
+        question_submissions.create.length === QUESTIONS,
       message: `All \`${QUESTIONS}\` ${Pluralize(
         "question",
         QUESTIONS

@@ -133,6 +133,20 @@ const quiz: CrudInterface<Quiz> = {
     "question_type",
     "question_count",
   ],
+  relations: {
+    questions: {
+      select: {
+        id: true,
+        question: true,
+        answers: {
+          select: {
+            id: true,
+            text: true,
+          },
+        },
+      },
+    },
+  },
   validated: quizValidators,
   unique: ["name"],
   accessPragma: {
