@@ -18,7 +18,6 @@ const ReturnError = (
   err: Error,
   res: Response
 ): Response<any, Record<string, any>> => {
-  console.error(err);
   return res.status(Code.ERROR).json({
     msg: err.message,
     data: undefined,

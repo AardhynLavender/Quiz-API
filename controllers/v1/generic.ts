@@ -109,6 +109,7 @@ const CreateGetRequest = <T extends Table>(
           // Reading
           const { id } = req.params;
           const data = await model.findUnique({
+            ...(relations && { include: relations }),
             where: { id: Number(id) },
           });
           if (!data)
@@ -176,22 +177,10 @@ const CreatePostRequest =
       // TODO: type ReduceToSchema with generics
 
       // extraction
-      const attributes: Record<keyof T, any> = ReduceToSchema(
+      const attributes: Record<string | keyof T, any> = ReduceToSchema(
         schema,
         req.body
       ) as any;
-
-      // Validation
-      if (validators) {
-        for (const v of validators) {
-          const { validator, message } = v;
-          const valid = await validator(attributes);
-          if (!valid)
-            return res.status(Code.BAD_REQUEST).json({
-              msg: message ?? `An invalid value was provided!`,
-            });
-        }
-      }
 
       // Nested Write Extraction ( `CreateOrConnect` not currently supported )
       const nestedWrites: NestedWrite =
@@ -202,6 +191,18 @@ const CreatePostRequest =
             ...(typeof write === "object" && { [key]: { create: write } }),
           };
         }, {}) ?? {};
+
+      // Validation
+      if (validators) {
+        for (const v of validators) {
+          const { validator, message } = v;
+          const valid = await validator({ ...attributes, ...nestedWrites });
+          if (!valid)
+            return res.status(Code.BAD_REQUEST).json({
+              msg: message ?? `An invalid value was provided!`,
+            });
+        }
+      }
 
       // Creation
       const record = await model.create({

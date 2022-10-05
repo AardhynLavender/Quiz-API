@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { Question, Quiz, Role, Submission, User } from "@prisma/client";
-export type Table = User | Quiz | Submission | Question;
+export type Table = User | Quiz | Submission | Question | Result;
 
 export interface Authorization {
   success: boolean;
@@ -38,7 +38,9 @@ export type HiddenFields = Record<string, string>;
 export type Immutability = Record<Role, string[]>;
 
 export interface ValidatedField<T extends Table> {
-  validator: (fields: Record<keyof T, any>) => Promise<boolean> | boolean;
+  validator: (
+    fields: Record<keyof T | string, any>
+  ) => Promise<boolean> | boolean;
   message?: string;
 }
 
