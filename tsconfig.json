@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "es6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "module": "CommonJS" /* Specify what module code is generated. */,
     "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
+    "rootDir": "./",
     "types": ["chai"],
     "outDir": "dist",
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
