@@ -4,4 +4,5 @@ import "./auth.test";
 import "./user/read.test";
 import "./user/mutation.test";
 import "./quiz/creation.test";
+import "./submission/creation.test";
 import "./user/deletion.test";

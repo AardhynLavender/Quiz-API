@@ -1,7 +1,6 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import { BasicUser, AdminUser, SuperUser } from "../data/user";
-import { RetrieveToken } from "../util/session";
 import { Code } from "../../types/http";
 import Actor from "../actor";
 import {
@@ -9,13 +8,8 @@ import {
   AssertInvalidAuthorizationResponse,
 } from "../util/assertion";
 import Url from "../util/request";
-import { Role, Category } from "@prisma/client";
-
-interface QuizCreationSharedData {
-  Auth: {
-    Authorization: string;
-  };
-}
+import { Role } from "@prisma/client";
+import { QuizCreationSharedData } from "quality_assurance";
 
 chai.use(chaiHttp);
 describe("Quiz Creation", () => {
@@ -54,7 +48,7 @@ describe("Quiz Creation", () => {
           Actor.post(Url("quizzes"))
             .set(SharedData.Auth)
             .send({
-              name: `${user.first_name}'s Quiz`,
+              name: `${user.first_name} Quiz`,
               start_date,
               end_date,
             })
@@ -66,7 +60,7 @@ describe("Quiz Creation", () => {
                 const { msg, data } = res.body;
                 chai.expect(msg).to.equal(QUIZ_CREATION_SUCCESS);
                 chai.expect(data.id).to.be.a("number");
-                chai.expect(data.name).to.equal(`${user.first_name}'s Quiz`);
+                chai.expect(data.name).to.equal(`${user.first_name} Quiz`);
                 for (const key of ["difficulty", "question", "category"])
                   chai.expect(data[`${key}_type`]).to.equal("mixed");
               }
@@ -102,7 +96,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s 2nd Quiz`,
+        name: `2nd Quiz`,
         start_date,
         end_date,
       })
@@ -110,7 +104,7 @@ describe("Quiz Creation", () => {
         AssertStandardResponse(res, Code.BAD_REQUEST);
         chai
           .expect(res.body.msg)
-          .to.equal(`Name must only contain alphanumeric characters`);
+          .to.equal(`Name must only contain alpha characters`);
         done();
       });
   });
@@ -119,7 +113,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Quiz`,
+        name: `${SuperUser.first_name} Quiz`,
         start_date,
         end_date,
       })
@@ -136,7 +130,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Second Quiz`,
+        name: `Second Quiz`,
         start_date,
         end_date,
       })
@@ -153,7 +147,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Third Quiz`,
+        name: `Third Quiz`,
         start_date,
         end_date,
       })
@@ -170,7 +164,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Fourth Quiz`,
+        name: `Fourth Quiz`,
         start_date,
         end_date,
       })
@@ -191,7 +185,7 @@ describe("Quiz Creation", () => {
       Actor.post(Url("quizzes"))
         .set(SharedData.Auth)
         .send({
-          name: `${SuperUser.first_name}'s Fifth Quiz`,
+          name: `Sixth Quiz`,
           start_date,
           end_date,
           question_count: invalidAmount,
@@ -207,7 +201,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s seventh Quiz`,
+        name: `Seventh Quiz`,
         start_date,
         end_date,
         difficulty_type: "I'm to young to die!",
@@ -228,7 +222,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Eighth Quiz`,
+        name: `Eighth Quiz`,
         start_date,
         end_date,
         category_type: "advanced quantum physics",
@@ -248,7 +242,7 @@ describe("Quiz Creation", () => {
     Actor.post(Url("quizzes"))
       .set(SharedData.Auth)
       .send({
-        name: `${SuperUser.first_name}'s Ninth Quiz`,
+        name: `Ninth Quiz`,
         start_date,
         end_date,
         question_type: "matrix",

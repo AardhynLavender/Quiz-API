@@ -1,6 +1,12 @@
-import { User } from "@prisma/client";
+import { User, Quiz, Question, Answer, Result } from "@prisma/client";
+
 interface UserSeed extends User {
   id: never;
+}
+
+interface Response {
+  status: number;
+  body: any;
 }
 
 interface SharedData {
@@ -17,7 +23,18 @@ interface UserSharedData extends SharedData {
   SuperUserId?: number | null;
 }
 
-interface Response {
-  status: number;
-  body: any;
+interface SubmissionSharedData extends SharedData {
+  quiz_id?: number;
+  BasicUserId?: number;
+  quizScore?: number;
 }
+
+interface QuizCreationSharedData {
+  Auth: {
+    Authorization: string;
+  };
+}
+
+type JoinedQuestion = Question & { answers: Answer[] };
+type JoinedQuiz = Quiz & { questions: JoinedQuestion[] };
+type JoinedResult = Result & { winner: User };

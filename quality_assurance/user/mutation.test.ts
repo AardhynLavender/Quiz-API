@@ -2,12 +2,7 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import { GetUser } from "../util/user";
 import { UserSharedData } from "../.";
-import {
-  BasicUser,
-  AdminUser,
-  UnauthenticatedUser,
-  SuperUser,
-} from "../data/user";
+import { BasicUser, AdminUser, SuperUser } from "../data/user";
 import { RetrieveToken } from "../util/session";
 import { Code } from "../../types/http";
 import Actor from "../actor";

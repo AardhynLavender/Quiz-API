@@ -9,7 +9,6 @@ import { Role } from ".prisma/client";
 import { ToQuietSnakeCase } from "../../util/string";
 
 chai.use(chaiHttp);
-
 describe("Registration", () => {
   const messages = {
     REGISTRATION_SUCCESS: "User successfully registered",

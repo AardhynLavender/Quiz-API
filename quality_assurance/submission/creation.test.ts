@@ -1,40 +1,20 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import Actor from "../actor";
-import {
-  AssertStandardResponse,
-  AssertInvalidAuthorizationResponse,
-} from "../util/assertion";
+import { AssertStandardResponse } from "../util/assertion";
 import { Code } from "../../types/http";
 import Url from "../util/request";
 import { RetrieveToken } from "../util/session";
-import { AdminUser, BasicUser, SuperUser } from "../data/user";
+import { BasicUser } from "../data/user";
 import { GetUser } from "../util/user";
-import { SharedData, UserSharedData } from "quality_assurance";
-import AuthHeader from "../util/authorization";
-import Prisma from "../../util/prismaConfig";
 import {
-  Answer,
-  Question,
-  QuestionSubmission,
-  Quiz,
-  Result,
-  User,
-} from "@prisma/client";
-
-interface SubmissionSharedData extends SharedData {
-  quiz_id?: number;
-  BasicUserId?: number;
-  quizScore?: number;
-}
-
-type JoinedQuestion = Question & { answers: Answer[] };
-type JoinedQuiz = Quiz & { questions: JoinedQuestion[] };
-type JoinedResult = Result & { winner: User };
+  JoinedQuiz,
+  JoinedResult,
+  SubmissionSharedData,
+} from "quality_assurance";
 
 chai.use(chaiHttp);
 describe("Submission Creation", () => {
-  const QUIZZES = 3;
   const SharedData: SubmissionSharedData = {
     Auth: {
       Authorization: "",
@@ -52,7 +32,6 @@ describe("Submission Creation", () => {
       .end((_, res) => {
         AssertStandardResponse(res);
         chai.expect(res.body.data).to.be.an("array");
-        // .and.to.have.length(QUIZZES);
 
         const quiz = res.body.data[0];
         chai.expect(quiz).to.have.property("id");
@@ -132,7 +111,7 @@ describe("Submission Creation", () => {
         done();
       });
   });
-  it("should fail to submit non existent questions to an existing quiz", (done) => {
+  it("Should fail to submit non existent questions to an existing quiz", (done) => {
     Actor.post(Url("submissions"))
       .set(SharedData.Auth)
       .send({
@@ -164,7 +143,7 @@ describe("Submission Creation", () => {
         done();
       });
   });
-  it("should successfully submit valid questions to an existing quiz", (done) => {
+  it("Should successfully submit valid questions to an existing quiz", (done) => {
     Actor.get(Url(`quizzes/${SharedData.quiz_id}`))
       .set(SharedData.Auth)
       .end((_, res) => {
@@ -209,7 +188,7 @@ describe("Submission Creation", () => {
           });
       });
   });
-  it("should have a result", (done) => {
+  it("Should have a result", (done) => {
     Actor.get(Url(`results`))
       .set(SharedData.Auth)
       .end((_, res) => {

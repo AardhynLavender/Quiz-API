@@ -25,7 +25,7 @@ before((done) => {
 });
 
 after((done) => {
-  console.log("post-test: clearing database");
+  console.log("Post-test: Clearing database");
   ClearDatabase()
     .then(() => {
       Actor.close();
