@@ -2,7 +2,7 @@
   "name": "restful-api-assignment",
   "version": "1.0.0",
   "description": "A quiz application",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
     "prepare": "npx husky install",
     "start": "ts-node app.ts",
