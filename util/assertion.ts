@@ -7,9 +7,9 @@
 
 import { Pluralize, ToSentenceCase } from "./string";
 
-const Regex: Record<string, RegExp> = {
+export const Regex: Record<string, RegExp> = {
   Email: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$/, // Based on https://www.w3resource.com/javascript/form/email-validation.php... modified to require second level domain
-  Alphanumeric: /^[a-z0-9\s]+$/i,
+  Alphanumeric: /^[a-zA-Z0-9 ]*$/,
   ContainsNumber: /.*\d.*/,
   ContainsSpecialCharacter: /.*[^a-zA-Z\d\s].*/,
 };

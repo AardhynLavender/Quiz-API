@@ -4,6 +4,7 @@ import CrudInterface from "../../types/generic";
 import { Quiz, Role } from "@prisma/client";
 import { GetQuestions } from "../../external_api/OpenTriviaDB";
 import { ValidatedField } from "../../types/generic";
+import { Regex } from "../../util/assertion";
 
 const CreateQuestions = async ({
   id: quiz_id,
@@ -87,6 +88,11 @@ const quizValidators: ValidatedField<Quiz>[] = [
       );
     },
     message: `\`Name\` must be between \`${NAME_MIN_LENGTH}\` and \`${NAME_MAX_LENGTH}\` characters inclusive`,
+  },
+  {
+    validator: ({ name }) =>
+      Regex.Alphanumeric.test(name) && !Regex.ContainsNumber.test(name),
+    message: "Name must only contain alpha characters",
   },
   {
     validator: ({ start_date }) => {

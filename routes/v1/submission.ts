@@ -4,7 +4,6 @@ import { Rating, Role, Submission } from "@prisma/client";
 import CreateRouter from "./generic";
 import { QUESTIONS } from "./quiz";
 import { Pluralize } from "../../util/string";
-import { NestedWrite } from "../../types/crud";
 
 const RatingLegend: Record<Rating, number> = {
   ONE: 1,
