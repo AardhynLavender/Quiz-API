@@ -17,6 +17,7 @@ for (const variable of [
   "SESSION_LIFETIME",
   "SEED_GIST_HASH",
   "GITHUB_USERNAME",
+  "IMPLICIT_SEEDING",
   "NODE_ENV",
 ] as EnvironmentVariable[])
   AssertEnvironmentVariable(variable);
@@ -113,12 +114,19 @@ import {
 } from "./seeding/implicit";
 (async () => {
   try {
-    const PORT = Environment.PORT;
+    const { PORT, IMPLICIT_SEEDING } = Environment;
 
-    // seed implicit data from Open Trivia DB
-    await SeedCategories();
-    await SeedDifficulties();
-    await SeedTypes();
+    if (IMPLICIT_SEEDING == "true") {
+      // seed implicit data from Open Trivia DB
+      console.log("Seeding implicit data");
+      await SeedCategories();
+      await SeedDifficulties();
+      await SeedTypes();
+      console.log("Success!");
+    } else
+      console.log(
+        "Implicit seeding is disabled... Have you run `seed:implicit`?"
+      );
 
     app.listen(PORT, (): void => {
       console.log(`\nServer is listening on port ${PORT}`);

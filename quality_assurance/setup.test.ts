@@ -8,6 +8,8 @@ export const ClearDatabase = async () => {
   await Prisma.user.deleteMany();
   await Prisma.quiz.deleteMany();
   await Prisma.question.deleteMany();
+  await Prisma.submission.deleteMany();
+  await Prisma.result.deleteMany();
 };
 
 const SeedDatabase = async () => {

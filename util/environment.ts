@@ -6,6 +6,7 @@ type EnvironmentVariable =
   | "SEED_GIST_HASH"
   | "GITHUB_USERNAME"
   | "NODE_ENV"
+  | "IMPLICIT_SEEDING"
   | string;
 
 const Environment: Record<EnvironmentVariable, string> = {};
