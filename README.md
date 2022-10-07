@@ -44,13 +44,14 @@ lets configure these variables:
 
 | Variable             | Description                                                                    |
 | :------------------- | :----------------------------------------------------------------------------- |
-| PORT                 | change if you wish... `3000` may conflict with defaults for other apps?        |
-| SHADOW_DATABASE_URL  | see `Prisma > Environment`                                                     |
-| DATABASE_URL         | see `Prisma > Environment`                                                     |
+| PORT                 | Port to listen on                                                              |
+| SHADOW_DATABASE_URL  | See `Prisma > Environment`                                                     |
+| DATABASE_URL         | See `Prisma > Environment`                                                     |
 | SESSION_LIFETIME     | How long your users are logged in for, measured in hours. Use a natural number |
-| SEED_GIST_HASH       | If you have seeding data provide a gist hash for it here.                      |
-| GITHUB_USERNAME      | Provide a username that the aforementioned gist is registered under            |
-| NODE_ENV=development | I like to be specific, you can set you node environment if needed              |
+| SEED_GIST_HASH       | See `Seeding > API`                                                            |
+| GITHUB_USERNAME      | See `Seeding > API`                                                            |
+| IMPLICIT_SEEDING     | Specify if the program should seed constants from **Open Trivia DB**           |
+| NODE_ENV=development | Where is Node?... I like to be specific                                        |
 
 ####
 
@@ -58,7 +59,7 @@ lets configure these variables:
 
 ### Entity Relationship Diagram
 
-For reference, here's ERD of the current database
+For reference, here's an ERD of the current database
 
 ```
 
@@ -100,9 +101,19 @@ And that's it!
 
 If your in a hurry, you can run `prisma:omni` to invoke all 3 scripts in one.
 
+### Studio
+
+Prisma has a useful CRUD Application that runs in your browser. Great for visualizing your models, relationships, and performing quick modifications and deletions.
+
+After you've run your a migration, check it out with the `prisma:studio` script.
+
 ### Seeding
 
 If you want to seed collections, add a file to a Github Gist, and specify the filename as a seed pool in the `seed` section of a `Crud Interface`. You can choose what users are able to access the seed route too.
+
+#### API
+
+You can seed data into the database via API request. optionally specifying the `pool` to seed from.
 
 From `User`:
 
@@ -119,7 +130,11 @@ From `User`:
   ],
 ```
 
-use `.../<table>/seed/[:pool]`
+Seed using
+
+```
+/<table>/seed/[:pool]
+```
 
 You will need to set the hash as your `SEED_GIST_HASH` and the username as the `GITHUB_USERNAME` for the seeding to work. Otherwise, and exception will be thrown.
 
@@ -130,17 +145,44 @@ SEED_GIST_HASH=271fbf9f9d9ecd5bba6da1234eff1f79
 GITHUB_USERNAME=aardhynlavender
 ```
 
+use `/users/seed/admin` to seed `ADMIN_USERS`. You will need at least one of these to create any quizzes or modify data.
+
+Of course, this route is only accessible to `SUPER_USER` sessions...
+
+#### Super Users
+
+As `SUPER_USER`s are quite powerful, you can only seed them manually from the command line.
+
+Use the `create_seeds` script and specify a `number` of users to create.
+
+```
+cd ./seeding
+./create_seeds.sh 3
+```
+
+This will create the templates you need to create some super user seeds.
+
+Use the `seed:super_users` npm script to load them into your database.
+
+#### Implicit Seeding
+
+The `Types`, `Categories`, and `Difficulties` models are checked and, if necessary, repopulated each time you run your API.
+
+You can all so run this manually, by using the `seed:implicit` script, and setting `IMPLICIT_SEEDING` to `false`.
+
+> Note, If you get any `foreign key constraint` errors on any of the aforementioned tables, running this script should resolve the relationships.
+
 ## Code Linting
 
-My codebase uses `ESLint` for linting, run `lint:check` for a a summary of errors and warnings, and run `lint:fix` to resolve them ( I do not advice this ).
+My codebase uses **ESLint** for linting, run `lint:check` for a a summary of errors and warnings, and run `lint:fix` to resolve them ( I do not advice this ).
 
 ## Coding Standard
 
 ### Prettier
 
-Prettier makes my code look pretty! and it can make your additions look the same too!
+**Prettier** makes my code look pretty! and it can make your additions look the same too!
 
-For IDE's I'd advice configuring some sort of "format on save" feature. but for you command line junkies, run `prettier:check` to show any formatting problems. `prettier:write` will apply the rules, although this run when you commit staged files.
+For IDE's and fancy Text Editors I'd advice configuring some sort of "format on save" feature. but for you 'command line crusaders', run `prettier:check` to show any formatting problems. `prettier:write` will apply the rules, although this run automatically when you commit staged files.
 
 ### File Headers and Function Descriptions
 
@@ -152,7 +194,7 @@ For IDE's I'd advice configuring some sort of "format on save" feature. but for 
 
 Run `qa:test` to run my integrated test suite.
 
-As this will delete **all data currently in the database**. Please be careful--I'd recommend setting up a testing database for local development.
+As this will delete **all data currently in the database**, please be careful -- I'd recommend setting up a testing database for local development.
 
 ## Code Coverage
 
@@ -174,13 +216,13 @@ Create your own deployment on Heroku by `fork`ing this repository on GitHub.
 
 Create a `new app`, following the standard prompts.
 
-Once created, head over to `Settings > Config Vars`, and add all the environment variables ( you _can_ leave out NODE_ENV ).
+Once created, head over to `Settings > Config Vars`, and add all the environment variables ( you _can_ leave out `NODE_ENV` ).
 
 Under `Deploy > Deployment Method` use the `GitHub` option, and enter the name of your forked repository. ( if you have not already setup Heroku with GitHub, there may be some extra steps to getting this link working )
 
 Enable automatic deploys, and thats it!
 
-> Note, if your using a new Database for this deployed app, you might need to load it locally, and run a migration on it.
+> Note, if your using a new Database for this deployed app, you will need to load it locally, and run a migration on it.
 
 ## License
 
