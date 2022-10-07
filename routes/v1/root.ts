@@ -1,4 +1,6 @@
+import { BASE_URL, CURRENT_VERSION } from "../../api";
 import { Router } from "express";
+import { VERSION } from "ts-node";
 import { Code } from "../../types/http";
 
 /**
@@ -10,7 +12,7 @@ import { Code } from "../../types/http";
  */
 const Root = (message: string, data?: unknown) => {
   const router = Router();
-  router.get(`/`, (_, res) =>
+  router.get(``, (_, res) =>
     res.status(Code.SUCCESS).json({ msg: message, data })
   );
   return router;

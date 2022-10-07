@@ -100,7 +100,7 @@ const endpoints = listEndpoints(app).map((endpoint) => ({
   methods: endpoint.methods,
 }));
 const root = Root("API Available Endpoints", endpoints);
-CreateRoute(app, root, "", SKIP_MIDDLEWARE, false);
+CreateRoute(app, root, "", SKIP_MIDDLEWARE);
 
 // Default
 import CreateDefaultRoute from "./routes/v1/defaultRoute";
