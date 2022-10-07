@@ -153,6 +153,14 @@ const quiz: CrudInterface<Quiz> = {
       },
     },
   },
+  filters: {
+    future: { start_date: { gte: new Date() } },
+    present: {
+      start_date: { lte: new Date() },
+      end_date: { gte: new Date() },
+    },
+    past: { end_date: { lte: new Date() } },
+  },
   validated: quizValidators,
   unique: ["name"],
   accessPragma: {

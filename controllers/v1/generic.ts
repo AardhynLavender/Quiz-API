@@ -6,6 +6,7 @@ import { Authorize, GetUser } from "./auth";
 import { Response } from "express";
 import {
   DataAccess,
+  Filter,
   HiddenFields,
   Immutability,
   OnSuccess,
@@ -61,6 +62,7 @@ const CreateGetRequest = <T extends Table>(
   table: string,
   hiddenFields?: HiddenFields,
   relations?: object,
+  filters?: Filter,
   unauthorizedAccess?: Role[],
   access?: Role[],
   dataAccess?: DataAccess<T>,
@@ -75,10 +77,16 @@ const CreateGetRequest = <T extends Table>(
           if (access && !access.includes(role))
             return Unauthorized(res, Crud.READ);
 
+          // Filtration Extraction
+          const option = req.query.filter as string | undefined;
+
           // Reading
-          const data = await model.findMany(
-            relations ? { include: relations } : {}
-          );
+          const data = await model.findMany({
+            ...(filters &&
+              option &&
+              filters[option] && { where: filters[option] }),
+            ...(relations && { include: relations }),
+          });
           if (!data.length)
             return res.status(Code.SUCCESS).json({ msg: `No ${table}s found` });
 

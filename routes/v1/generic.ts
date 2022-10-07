@@ -21,6 +21,7 @@ const CreateRouter = <T extends Table>({
   accessPragma,
   computed,
   validated,
+  filters,
   immutables,
   relations,
   hiddenFields,
@@ -74,6 +75,7 @@ const CreateRouter = <T extends Table>({
             name,
             hiddenFields,
             relations,
+            undefined,
             read.unauthorizedAccess,
             read.unconditionalAccess,
             read.conditionalAccess,
@@ -114,6 +116,7 @@ const CreateRouter = <T extends Table>({
         name,
         hiddenFields,
         relations,
+        filters,
         undefined,
         readMany
       )

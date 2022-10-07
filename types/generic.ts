@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { Question, Quiz, Role, Submission, User } from "@prisma/client";
+import { Question, Quiz, Result, Role, Submission, User } from "@prisma/client";
 export type Table = User | Quiz | Submission | Question | Result;
 
 export interface Authorization {
@@ -44,6 +44,13 @@ export interface ValidatedField<T extends Table> {
   message?: string;
 }
 
+// export type PrismaOperator = "gt" | "lt" | "equals" | "contains" | "startsWith";
+
+export type Filter = Record<
+  string,
+  Record<string, Record<string, string | number | boolean | Date>>
+>;
+
 // fields from the schema that are computed rather than extracted from a request
 export interface ComputedField {
   name: string;
@@ -60,6 +67,7 @@ export default interface CrudInterface<T extends Table> {
   nestedWriteSchema?: string[];
   unique: (string | number)[];
   computed?: ComputedField[];
+  filters?: Filter;
   validated?: ValidatedField<T>[];
   accessPragma: CrudAccessPragma<T>; // CRUD access permissions
   immutables?: Immutability;
