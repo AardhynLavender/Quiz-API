@@ -98,22 +98,10 @@ export const GetCategories = async () => {
 };
 
 export const GetDifficulties = (): Difficulty[] => [
-  {
-    name: "easy",
-    score: 1,
-  },
-  {
-    name: "medium",
-    score: 2,
-  },
-  {
-    name: "hard",
-    score: 3,
-  },
-  {
-    name: "mixed",
-    score: 0,
-  },
+  { name: "easy" },
+  { name: "medium" },
+  { name: "hard" },
+  { name: "mixed" },
 ];
 
 export const GetTypes = (): OpenTriviaQuestionType[] => {

@@ -65,7 +65,6 @@ model Type {
 
 model Difficulty {
   name     String     @id
-  score    Int?
   question Question[]
   quizzes  Quiz[]
 }

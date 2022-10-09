@@ -5,6 +5,15 @@ CREATE TYPE "Role" AS ENUM ('SUPER_USER', 'ADMIN_USER', 'BASIC_USER');
 CREATE TYPE "Rating" AS ENUM ('ONE', 'TWO', 'THREE', 'FOUR', 'FIVE');
 
 -- CreateTable
+CREATE TABLE "Session" (
+    "key" TEXT NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "expires_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("key")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "first_name" TEXT NOT NULL,
@@ -36,7 +45,6 @@ CREATE TABLE "Type" (
 -- CreateTable
 CREATE TABLE "Difficulty" (
     "name" TEXT NOT NULL,
-    "score" INTEGER,
 
     CONSTRAINT "Difficulty_pkey" PRIMARY KEY ("name")
 );
@@ -109,6 +117,9 @@ CREATE TABLE "Submission" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Session_user_id_key" ON "Session"("user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
@@ -123,11 +134,8 @@ CREATE UNIQUE INDEX "Quiz_name_key" ON "Quiz"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "Result_quiz_id_key" ON "Result"("quiz_id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Submission_user_id_key" ON "Submission"("user_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Submission_quiz_id_key" ON "Submission"("quiz_id");
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Answer" ADD CONSTRAINT "Answer_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "Question"("id") ON DELETE CASCADE ON UPDATE CASCADE;
