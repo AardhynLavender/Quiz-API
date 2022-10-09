@@ -1,7 +1,7 @@
 import Prisma from "../../util/prismaConfig";
 import CreateRouter from "./generic";
 import CrudInterface from "../../types/generic";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { CreateFakePassword } from "../../util/string";
 import { AccessingOwn, StandardHash } from "../../util/auth";
 
@@ -30,8 +30,28 @@ const user: CrudInterface<User> = {
     },
     readMany: ["SUPER_USER", "ADMIN_USER"],
     update: {
-      unconditionalAccess: ["SUPER_USER", "ADMIN_USER"],
-      conditionalAccess: (data, user) => AccessingOwn(data, user, "modify"), // only allow mutation of own data
+      conditionalAccess: (data, user) => {
+        const own = AccessingOwn(data, user, "modify");
+        if (own.success) return own;
+
+        if (user.role === Role.SUPER_USER)
+          return data.role === Role.SUPER_USER
+            ? {
+                success: false,
+                message: "SUPER_USERS cannot modify other SUPER_USERS",
+              }
+            : { success: true, message: "ok" };
+
+        if (user.role === Role.ADMIN_USER)
+          return data.role === Role.ADMIN_USER
+            ? {
+                success: false,
+                message: "ADMIN_USERS cannot modify other ADMIN_USERS",
+              }
+            : { success: true, message: "ok" };
+
+        return own;
+      }, // only allow mutation of own data
     },
     delete: {
       unauthorizedAccess: ["ADMIN_USER", "BASIC_USER"],
