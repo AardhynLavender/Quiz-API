@@ -27,7 +27,7 @@ Install dependencies
 npm i
 ```
 
-Set up your `.env` file with.
+Set up your `.env` file with
 
 ```shell
 ./configureEnvironment
@@ -40,20 +40,18 @@ cp template.env .env
 vim .env
 ```
 
-lets configure these variables:
+You'll need configure the variables outlined in the template
 
-| Variable             | Description                                                                    |
-| :------------------- | :----------------------------------------------------------------------------- |
-| PORT                 | Port to listen on                                                              |
-| SHADOW_DATABASE_URL  | See `Prisma > Environment`                                                     |
-| DATABASE_URL         | See `Prisma > Environment`                                                     |
-| SESSION_LIFETIME     | How long your users are logged in for, measured in hours. Use a natural number |
-| SEED_GIST_HASH       | See `Seeding > API`                                                            |
-| GITHUB_USERNAME      | See `Seeding > API`                                                            |
-| IMPLICIT_SEEDING     | Specify if the program should seed constants from **Open Trivia DB**           |
-| NODE_ENV=development | Where is Node?... I like to be specific                                        |
-
-####
+| Variable            | Description                                                                    |
+| :------------------ | :----------------------------------------------------------------------------- |
+| PORT                | Port to listen on                                                              |
+| SHADOW_DATABASE_URL | See `Prisma > Environment`                                                     |
+| DATABASE_URL        | See `Prisma > Environment`                                                     |
+| SESSION_LIFETIME    | How long your users are logged in for, measured in hours. Use a natural number |
+| SEED_GIST_HASH      | See `Seeding > API`                                                            |
+| GITHUB_USERNAME     | See `Seeding > API`                                                            |
+| IMPLICIT_SEEDING    | Specify if the program should seed constants from **Open Trivia DB**           |
+| NODE_ENV            | Where is Node?... I like to be specific                                        |
 
 ## Prisma Configuration
 
@@ -69,19 +67,11 @@ For reference, here's an ERD of the current database
 
 Firstly, you need to setup a database. I use a PostgreSQL instance on a Heroku free tier ( at least, for now... ).
 
-Create a `new app`, and add **two** `Heroku Postgres` addons--the free ones will do.
+Create a `new app`, and add **two** `Heroku Postgres` addons -- the free ones will do.
 
-As you can see from the `prisma.schema` bellow, you'll need to configure a `DATABASE_URL` and `SHADOW_DATABASE_URL`
+You'll need to configure the `DATABASE_URL` and `SHADOW_DATABASE_URL` in your local environment.
 
-```prisma
-datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-}
-```
-
-You'll find these in your `Config Vars` section in the settings for your Heroku app. Use the `HEROKU_POSTGRESQL_*******` variable for your `SHADOW_DATABASE_URL`.
+> You'll find these in your `Config Vars` section in the settings for your Heroku app. Use the `HEROKU_POSTGRESQL_*******` variable for your `SHADOW_DATABASE_URL`.
 
 ### Migrations
 
@@ -89,15 +79,15 @@ Changes to the `prisma.schema` file will require running a migration to take eff
 
 Format the prisma schema with `prisma:format`, this will align the columns within models so they are easier to read.
 
-Run `prisma:migrate` to create the `sql` alterations needed to apply your changes.
+Run `prisma:migrate` to create the `sql` commands needed to apply your changes.
 
 > You will lose data in this process, have a look at [this article](https://www.prisma.io/docs/concepts/components/prisma-migrate/migrate-development-production#production-and-testing-environments) for production viable migrations.
 
 Now that your changes have been applied, we need to update our ORM and TypeScript definitions, so our client in in sync with our database. Run `prisma:generate` for this.
 
-> Note, you may need to restart your TypeScript language server to get the updated definitions. For Visual Studio, run `>TypeScript: Restart TS server` in your command palette.
+> Note, you may need to restart your TypeScript language server to get the updated definitions. i.e: For Visual Studio Code, run `>TypeScript: Restart TS server` in your command palette.
 
-And that's it!
+#### TL;DR
 
 If your in a hurry, you can run `prisma:omni` to invoke all 3 scripts in one.
 
@@ -109,7 +99,7 @@ After you've run your a migration, check it out with the `prisma:studio` script.
 
 ### Seeding
 
-If you want to seed collections, add a file to a Github Gist, and specify the filename as a seed pool in the `seed` section of a `Crud Interface`. You can choose what users are able to access the seed route too.
+If you want to seed collections, add a file to a Github Gist, and specify the filename as a seed pool in the `seed` section of a `Crud Interface`. You can choose what roles are able to access the seed route too.
 
 #### API
 
@@ -138,14 +128,15 @@ Seed using
 
 You will need to set the hash as your `SEED_GIST_HASH` and the username as the `GITHUB_USERNAME` for the seeding to work. Otherwise, and exception will be thrown.
 
-For reference, you can use my own Gist with the following variables
+For convince, you can use my own Gist with the following variables
 
 ```shell
 SEED_GIST_HASH=271fbf9f9d9ecd5bba6da1234eff1f79
 GITHUB_USERNAME=aardhynlavender
 ```
 
-use `/users/seed/admin` to seed `ADMIN_USERS`. You will need at least one of these to create any quizzes or modify data.
+- use `/users/seed/admin` to seed `ADMIN_USERS`.
+- use `/users/seed/basic` to seed 'BASIC_USERS`.
 
 Of course, this route is only accessible to `SUPER_USER` sessions...
 
@@ -155,7 +146,7 @@ As `SUPER_USER`s are quite powerful, you can only seed them manually from the co
 
 Use the `create_seeds` script and specify a `number` of users to create.
 
-```
+```shell
 cd ./seeding
 ./create_seeds.sh 3
 ```
@@ -170,7 +161,7 @@ The `Types`, `Categories`, and `Difficulties` models are checked and, if necessa
 
 You can all so run this manually, by using the `seed:implicit` script, and setting `IMPLICIT_SEEDING` to `false`.
 
-> Note, If you get any `foreign key constraint` errors on any of the aforementioned tables, running this script should resolve the relationships.
+> Note, If you get any `foreign key constraint` errors on any of the aforementioned tables, running this script should resolve any dangling pointers.
 
 ## Code Linting
 
@@ -184,12 +175,6 @@ My codebase uses **ESLint** for linting, run `lint:check` for a a summary of err
 
 For IDE's and fancy Text Editors I'd advice configuring some sort of "format on save" feature. but for you 'command line crusaders', run `prettier:check` to show any formatting problems. `prettier:write` will apply the rules, although this run automatically when you commit staged files.
 
-### File Headers and Function Descriptions
-
-```
-
-```
-
 ## Integration Testing
 
 Run `qa:test` to run my integrated test suite.
@@ -198,7 +183,7 @@ As this will delete **all data currently in the database**, please be careful --
 
 ## Code Coverage
 
-For more in-depth testing, use `qa:coverage` to run the test suite with a summative code coverage report at the end. This script will output an `html` report to the `coverage/` directory--open `index.html` to view the report if it does not open automatically at the end.
+For more in-depth testing, use `qa:coverage` to run the test suite with a summative code coverage report at the end. This script will output an `html` report to the `./coverage` directory -- open `index.html` to view the report if it does not open automatically at the end.
 
 ## Deployment
 
@@ -206,7 +191,7 @@ For more in-depth testing, use `qa:coverage` to run the test suite with a summat
 
 You can use the API right now by visiting [this site](https://laveat1-quiz-api.herokuapp.com/), or using the following url
 
-```
+```plaintext
 https://laveat1-quiz-api.herokuapp.com/
 ```
 
@@ -218,9 +203,9 @@ Create a `new app`, following the standard prompts.
 
 Once created, head over to `Settings > Config Vars`, and add all the environment variables ( you _can_ leave out `NODE_ENV` ).
 
-Under `Deploy > Deployment Method` use the `GitHub` option, and enter the name of your forked repository. ( if you have not already setup Heroku with GitHub, there may be some extra steps to getting this link working )
+Under `Deploy > Deployment Method` use the `GitHub` option, and enter the name of your forked repository. ( if you have not already setup Heroku with GitHub, there may be some extra steps to getting this link working ).
 
-Enable automatic deploys, and thats it!
+Enable automatic deploys, and open your app.
 
 > Note, if your using a new Database for this deployed app, you will need to load it locally, and run a migration on it.
 
