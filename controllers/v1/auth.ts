@@ -1,57 +1,22 @@
 import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import AssertValid, { AssertEquality } from "../../util/assertion";
+import AssertValid from "../../util/assertion";
 import { Code, UserRequest } from "../../types/http";
-import { Environment } from "../../util/environment";
 import Prisma from "../../util/prismaConfig";
 import { Role, User } from "@prisma/client";
 import CreateProfilePictureURI, { HashString } from "../../util/profile";
 import { CreateFakePassword } from "../../util/string";
 import { StandardHash } from "../../util/auth";
+import { UserRegistration } from "../../types/credentials";
+import { CreateSession, RevokeSession } from "../../util/session";
 
-interface UserRegistration extends User {
-  confirm_password: string;
-}
+/**
+ * Authentication Controller
+ * @author Aardhyn Lavender
+ * @description  Register, Login, and Logout. Use the returned session key to authenticate requests.
+ */
 
-const SESSION_ATTEMPTS = 3;
 const SESSION_ACTIVE = "Unique constraint failed on the fields: (`user_id`)";
-
-const CreateExpiryDate = (hours: number) =>
-  new Date(Date.now() + hours * 60 * 60 * 1000);
-
-const Authorize = async (
-  id: number | string | undefined,
-  elevation: Array<Role>
-): Promise<boolean> => {
-  try {
-    const user = await GetUser(id);
-    return !!user && elevation.includes(user.role);
-  } catch (err: unknown) {
-    return false;
-  }
-};
-
-const GetUser = async (id: number | string | undefined) => {
-  const user = await Prisma.user.findUnique({
-    where: { id: typeof id === "string" ? Number(id) : id },
-  });
-  return user;
-};
-
-const RevokeSession = async (id: number) =>
-  await Prisma.session.delete({ where: { user_id: id } });
-
-const CreateSession = async (id: number) => {
-  const token = await Prisma.session.create({
-    data: {
-      user_id: id,
-      expires_at: CreateExpiryDate(parseInt(Environment.SESSION_LIFETIME)),
-    },
-  });
-  if (!token) throw new Error("Failed to create a new session");
-  return token.key;
-};
 
 const AuthenticatedResponse = (res: Response, username: string, key: string) =>
   res.status(Code.SUCCESS).json({
@@ -173,4 +138,5 @@ const Logout = async (req: UserRequest, res: Response) => {
     });
   }
 };
-export { Authorize, GetUser, Register, Login, Logout };
+
+export { Register, Login, Logout };

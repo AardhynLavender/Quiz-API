@@ -3,6 +3,16 @@ import CrudInterface from "../../types/generic";
 import Prisma from "../../util/prismaConfig";
 import CreateRouter from "./generic";
 
+/**
+ * Question Interface
+ * @author Aardhyn Lavender
+ *
+ * @description   Read Questions and their possible answers from the database
+ *                No, you can't see which answers are correct, silly!
+ *
+ *                SUPER_USERs and ADMIN_USERs can update. SUPER_USERs can delete.
+ */
+
 const question: CrudInterface<Question> = {
   name: "Question",
   model: Prisma.question,

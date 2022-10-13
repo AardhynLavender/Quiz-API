@@ -1,15 +1,13 @@
-import { BASE_URL, CURRENT_VERSION } from "../../api";
 import { Router } from "express";
-import { VERSION } from "ts-node";
 import { Code } from "../../types/http";
 
 /**
- * Return data for the root route.
- * @param app the express app to attach to
- * @param data the data to return
- * @param message the message to send to the client
+ * Root Route
+ * @author Aardhyn Lavender
  *
+ * @description Returns some user defined data when is requested.
  */
+
 const Root = (message: string, data?: unknown) => {
   const router = Router();
   router.get(``, (_, res) =>

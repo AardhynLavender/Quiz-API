@@ -2,12 +2,17 @@ import { Express } from "express";
 import { Code } from "../../types/http";
 
 /**
- * Handle the unhandled
+ * Default Route Handler
+ * @author Aardhyn Lavender
+ * @description   Default Route Handler is used to handle all unknown arbirary routes.
+ *                Please Create this Router after all other routers have been created.
  *
- * **This should be invoked after your handled routes**
- * @param app the express app to attach to
- * @param message the message to send to the client when an unhandled route is encountered
+ * API
+ *
+ * @link *
+ *
  */
+
 const CreateDefaultRoute = (app: Express, message: string): void => {
   app.use((_, res) => res.status(Code.NOTFOUND).json({ msg: message }));
 };

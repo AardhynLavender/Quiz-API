@@ -6,8 +6,21 @@ import { CreateFakePassword } from "../../util/string";
 import { AccessingOwn, StandardHash } from "../../util/auth";
 
 /**
- * An interface for the User table
+ * User Interface ( not to be confused with a user interface )
+ * @author Aardhyn Lavender
+ *
+ * @description   Allows Users to read and edit their own data. While permitting SUPER_USERS
+ *                and ADMIN_USERS to read and edit all users with Roles below their own.
+ *
+ *                Password data is not returned to the client.
+ *
+ *                No User may change their own, or others' roles.
+ *
+ *                A Seeding function is provided to create a SUPER_USERs and ADMIN_USERs
+ *                - SUPER_USERS can seed from the Admin and Basic pools
+ *                - ADMIN_USERS can only seed from the Basic pool
  */
+
 const user: CrudInterface<User> = {
   name: "User",
   model: Prisma.user,
@@ -60,7 +73,7 @@ const user: CrudInterface<User> = {
           ? {
               success: false,
               message:
-                "Although you are powerful, you are not all powerful! SUPER_USERS may not be deleted",
+                "Although you are powerful, you are not *all* powerful! SUPER_USERS may not be deleted",
             }
           : { success: true, message: "ok" };
       },

@@ -3,6 +3,15 @@ import CrudInterface from "types/generic";
 import Prisma from "../../util/prismaConfig";
 import CreateRouter from "./generic";
 
+/**
+ * Submission Interface
+ * @author Aardhyn Lavender
+ *
+ * @description Read the Result of a quiz
+ *
+ *              SUPER_USERs and ADMIN_USERs can update. SUPER_USERs can delete
+ */
+
 const submission: CrudInterface<Result> = {
   name: "Result",
   model: Prisma.result,

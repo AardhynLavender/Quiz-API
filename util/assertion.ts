@@ -1,10 +1,3 @@
-/**
- * @filename assertion.ts
- * @author Aardhyn Lavender
- *
- * @description This file contains generic textural asserts for the application.
- */
-
 import { Pluralize, ToSentenceCase } from "./string";
 
 export const Regex: Record<string, RegExp> = {

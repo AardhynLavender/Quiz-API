@@ -19,7 +19,7 @@ describe("User Deletion", () => {
     DELETE_ELEVATION_ERR:
       "You do not have permission to delete this records from User",
     IMMORTAL_USER_DELETION_ERR:
-      "Although you are powerful, you are not all powerful! SUPER_USERS may not be deleted",
+      "Although you are powerful, you are not *all* powerful! SUPER_USERS may not be deleted",
   };
   const SharedData: UserSharedData = {
     Auth: {

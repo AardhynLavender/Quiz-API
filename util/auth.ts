@@ -1,12 +1,6 @@
 import { User } from "@prisma/client";
 import bcryptjs from "bcryptjs";
 
-/**
- * determine if the user is accessing their own data
- * @param data the data fetched
- * @param user the user who made the request
- * @returns an indication of whether the user is authorized to access the data
- */
 const AccessingOwn = (
   data: User,
   user: User,

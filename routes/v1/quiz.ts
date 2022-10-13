@@ -6,6 +6,21 @@ import { GetQuestions } from "../../external_api/OpenTriviaDB";
 import { ValidatedField } from "../../types/generic";
 import { Regex } from "../../util/assertion";
 
+/**
+ * Quiz Interface
+ * @author Aardhyn Lavender
+ *
+ * @description   SUPER_USERs and ADMIN_USERs can create quizzes with this interface.
+ *                All users may read quizzes + filter for past, present, and future quizzes.
+ *
+ *                Quiz creators may choose the difficulty, category, and question type.
+ *                Leave any aforementioned field blank for `mixed` values
+ *
+ *                As requested, you may choose the number of questions... Although you MUST pick 10?
+ *
+ *                Creating Quizzes will automatically create questions and answers... so be patient.
+ */
+
 const CreateQuestions = async ({
   id: quiz_id,
   category_type,

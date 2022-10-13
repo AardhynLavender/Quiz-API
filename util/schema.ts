@@ -1,11 +1,5 @@
-import { isDate } from "util/types";
+import { HiddenFields, Table } from "../types/generic";
 
-/**
- * reduces an a request `body` to a the elements in the `schema`
- * @param {Array<string>} schema to reduce to
- * @param {*} body to be reduced
- * @returns a request body containing only elements in the schema
- */
 const ReduceToSchema = (
   schema: Array<string>,
   body: any
@@ -17,6 +11,17 @@ const ReduceToSchema = (
     };
   }, {});
 
+const HideFields = (
+  data: Table[],
+  hiddenFields?: HiddenFields
+): Table[] | Table =>
+  hiddenFields
+    ? data.map((record: Table) => ({
+        ...record,
+        ...hiddenFields,
+      }))
+    : data;
+
 const ParseString = (value: string | number): number | Date | string => {
   if (typeof value === "string") {
     const date = Date.parse(value);
@@ -24,4 +29,4 @@ const ParseString = (value: string | number): number | Date | string => {
   } else return value;
 };
 
-export { ReduceToSchema };
+export { ReduceToSchema, HideFields };

@@ -1,9 +1,7 @@
 import { Role } from "@prisma/client";
 import { ReturnError as Error } from "./error";
 import { Code, RequestHandler } from "../../types/http";
-import { ReduceToSchema } from "../../util/schema";
-import { Authorize, GetUser } from "./auth";
-import { Response } from "express";
+import { HideFields, ReduceToSchema } from "../../util/schema";
 import {
   DataAccess,
   Filter,
@@ -14,29 +12,18 @@ import {
   ValidatedField,
 } from "../../types/generic";
 import { Crud, NestedWrite } from "../../types/crud";
+import { Authorize, Unauthorized } from "../../util/user";
 
 /**
- * Creates and unauthorized response
- * @param res the response to attach to
- * @param action the action that is unauthorized
- * @returns the response with the appropriate error attached
+ * Generic CRUD Controller
+ * @author: Aardhyn Lavender
+ * @description:  Perform GET, GETs, POST, PUT, and DELETE requests on a table.
+ *
+ *                This controller is designed to be used with the generic router and CRUD Interface, and therefore:
+ *                - Applies POST Field computation, validation, and immutability where specified.
+ *                - Applies Unconditional and Conditional Authorization per Role if specified.
+ *                - Invokes provided Creation Success Handlers if specified.
  */
-const Unauthorized = (res: Response, action: Crud): Response => {
-  return res.status(Code.FORBIDDEN).json({
-    msg: `${action.toString()} requires an elevated permission level`,
-  });
-};
-
-const HideFields = (
-  data: Table[],
-  hiddenFields?: HiddenFields
-): Table[] | Table =>
-  hiddenFields
-    ? data.map((record: Table) => ({
-        ...record,
-        ...hiddenFields,
-      }))
-    : data;
 
 const ResponseData = (
   data: Table[],
@@ -50,13 +37,6 @@ const ResponseData = (
   };
 };
 
-/**
- * Generates a GET handler
- * @param {prisma.model} model
- * @param {string} table
- * @param {boolean} many default `true`
- * @returns A GET handler
- */
 const CreateGetRequest = <T extends Table>(
   model: any,
   table: string,
@@ -107,11 +87,7 @@ const CreateGetRequest = <T extends Table>(
     : async (req, res) => {
         try {
           // Credentials
-          const user = await GetUser(req.user?.id);
-          if (!user)
-            return res
-              .status(Code.UNAUTHORIZED)
-              .json({ msg: "No user found! Have you logged in?" });
+          const user = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
           const { role } = user;
 
           // Reading
@@ -155,13 +131,6 @@ const CreateGetRequest = <T extends Table>(
       };
 };
 
-/**
- * Generates a POST request
- * @param {prisma.model} model
- * @param {string} table
- * @param {Array<string>} attributes to extract from the request body
- * @returns A POST handler
- */
 const CreatePostRequest =
   <T extends Table>(
     model: any,
@@ -181,8 +150,6 @@ const CreatePostRequest =
         const authorized = await Authorize(id, access);
         if (!authorized) return Unauthorized(res, Crud.DELETION);
       }
-
-      // TODO: type ReduceToSchema with generics
 
       // extraction
       const attributes: Record<string | keyof T, any> = ReduceToSchema(
@@ -242,12 +209,6 @@ const CreatePostRequest =
     }
   };
 
-/**
- * Generates a PUT request
- * @param {prisma.model} model
- * @param {string} table
- * @returns A PUT handler
- */
 const CreatePutRequest =
   <T extends Table>(
     model: any,
@@ -321,12 +282,6 @@ const CreatePutRequest =
     }
   };
 
-/**
- * Generates a DELETE request
- * @param {prisma.model} model
- * @param {string} table
- * @returns A DELETE handler
- */
 const CreateDeleteRequest =
   <T extends Table>(
     model: any,

@@ -65,33 +65,33 @@ if (Environment.NODE_ENV !== "QA") {
 
 // ROUTES
 
-import CreateRoute from "./routes/v1/route";
+import CreateRoutes from "./routes/v1/route";
 
 // Auth
 import { SKIP_MIDDLEWARE } from "./api";
 import { authRouter, sessionRouter } from "./routes/v1/auth";
-CreateRoute(app, authRouter, "auth", SKIP_MIDDLEWARE);
-CreateRoute(app, sessionRouter, "auth");
+CreateRoutes(app, authRouter, "auth", SKIP_MIDDLEWARE);
+CreateRoutes(app, sessionRouter, "auth");
 
 // User
 import User from "./routes/v1/user";
-CreateRoute(app, User, "users");
+CreateRoutes(app, User, "users");
 
 // Quiz
 import Quiz from "./routes/v1/quiz";
-CreateRoute(app, Quiz, "quizzes");
+CreateRoutes(app, Quiz, "quizzes");
 
 // Submission
 import Submission from "./routes/v1/submission";
-CreateRoute(app, Submission, "submissions");
+CreateRoutes(app, Submission, "submissions");
 
 // Question
 import Question from "./routes/v1/question";
-CreateRoute(app, Question, "questions");
+CreateRoutes(app, Question, "questions");
 
 // Results
 import Result from "./routes/v1/result";
-CreateRoute(app, Result, "results");
+CreateRoutes(app, Result, "results");
 
 // Root
 import listEndpoints from "express-list-endpoints";
@@ -101,7 +101,7 @@ const endpoints = listEndpoints(app).map((endpoint) => ({
   methods: endpoint.methods,
 }));
 const root = Root("API Available Endpoints", endpoints);
-CreateRoute(app, root, "", SKIP_MIDDLEWARE);
+CreateRoutes(app, root, "", SKIP_MIDDLEWARE);
 
 // Default
 import CreateDefaultRoute from "./routes/v1/defaultRoute";

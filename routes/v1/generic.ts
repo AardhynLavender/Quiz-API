@@ -12,6 +12,51 @@ import CreateVoidRoute from "../../controllers/v1/void";
 import { Crud } from "../../types/crud";
 import { Environment } from "../../util/environment";
 
+/**
+ * Generic Router
+ * @author Aardhyn Lavender
+ * @description Creates Routes for a given model applying the specifications in the CRUD interface
+ *
+ * API
+ *
+ * **Operations do not come with a default prefix**
+ * The prefix is defined when invoking `CreateRoutes` from `./route.ts`
+ * See `App.ts` for examples.
+ *
+ * Read and Read Many
+ *
+ * @link GET /[:id]?[filter=<filter>]
+ * @param {Header} Authorization - session key
+ * @param {Param?} id A specific record to retrieve
+ * @param {Query?} filter specify a filter to apply to the query
+ *
+ * Create
+ *
+ * @link POST /
+ * @param {Header} Authorization - session key
+ * @param {Body} data The data to create a new record with
+ *
+ * Mutation
+ *
+ * @link PUT /
+ * @param {Header} Authorization - session key
+ * @param {Body} data The data to update the record with
+ * @param {Param} id A specific record to mutate
+ *
+ * Deletion
+ *
+ * @link DELETE /
+ * @param {Header} Authorization - session key
+ * @param {Param} id A specific record to delete
+ *
+ * Seeding
+ *
+ * @link POST /seed/:id
+ * @param pool The specific pool to seed ( default will be the first pool specified in the Crud Interface )
+ * @param {Header} Authorization - session key
+ *
+ */
+
 const CreateRouter = <T extends Table>({
   name,
   model,

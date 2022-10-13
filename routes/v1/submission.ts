@@ -5,6 +5,20 @@ import CreateRouter from "./generic";
 import { QUESTIONS } from "./quiz";
 import { Pluralize } from "../../util/string";
 
+/**
+ * Submission Interface
+ * @author Aardhyn Lavender
+ *
+ * @description   Allows Users to submit answers to a quiz
+ *
+ *                Each submission is marked after submission.
+ *                The related `Result` is upserted.
+ *
+ *                SUPER_USERs and ADMIN_USERs can update. SUPER_USERs can delete
+ *
+ *                BASIC_USERs can read their own submissions
+ */
+
 const RatingLegend: Record<Rating, number> = {
   ONE: 1,
   TWO: 2,

@@ -1,10 +1,17 @@
+/* c8 ignore start */
+
 import { Code, RequestHandler } from "../../types/http";
 import { ReturnError } from "./error";
 import axios from "axios";
-import { GetUser } from "./auth";
 import { Role } from "@prisma/client";
 import { Environment } from "../../util/environment";
 import { ComputedField } from "../../types/generic";
+
+/**
+ * Seed Controller
+ * @author: Aardhyn Lavender
+ * @description:  Seed the database from a `pool` with data from the applications `seed gist`
+ */
 
 const CreateSeedRequest =
   (
@@ -17,14 +24,7 @@ const CreateSeedRequest =
   ): RequestHandler =>
   async (req, res) => {
     try {
-      // Authorize the requesting user
-      const user = await GetUser(req.user?.id);
-      if (!user)
-        return res
-          .status(Code.UNAUTHORIZED)
-          .json({ msg: "No user found! Have you logged in?" });
-
-      const { role } = user;
+      const { role } = req.user!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
       if (!access.includes(role))
         return res.status(Code.UNAUTHORIZED).json({
@@ -102,3 +102,5 @@ const CreateSeedRequest =
   };
 
 export default CreateSeedRequest;
+
+/* c8 ignore end */

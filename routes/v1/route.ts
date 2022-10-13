@@ -2,7 +2,7 @@ import { Express, Router } from "express";
 import { BASE_URL, CURRENT_VERSION } from "../../api";
 import middleware from "../../middleware/middleware";
 
-const CreateRoute = (
+const CreateRoutes = (
   app: Express,
   router: Router,
   endpoint: string,
@@ -15,4 +15,4 @@ const CreateRoute = (
   skipMiddleware ? app.use(url, router) : app.use(url, middleware, router);
 };
 
-export default CreateRoute;
+export default CreateRoutes;

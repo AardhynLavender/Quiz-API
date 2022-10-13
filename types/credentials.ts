@@ -1,4 +1,8 @@
-import { JwtPayload } from "jsonwebtoken";
+import { User } from "@prisma/client";
+
+interface UserRegistration extends User {
+  confirm_password: string;
+}
 
 interface Credentials {
   name: string;
@@ -8,4 +12,4 @@ interface Credentials {
   role: string;
 }
 
-export { Credentials };
+export { Credentials, UserRegistration };
