@@ -224,6 +224,16 @@ Enable automatic deploys, and thats it!
 
 > Note, if your using a new Database for this deployed app, you will need to load it locally, and run a migration on it.
 
+## References
+
+#### Simple Hashing Algorithm
+
+> "Barack". (2012) https://stackoverflow.com/questions/6122571/simple-non-secure-hash-function-for-javascript, Stackoverflow
+
+#### Email Regular Expression
+
+> W3Resource. (2022) https://www.w3resource.com/javascript/form/email-validation.php, W3Resource
+
 ## License
 
 Copyright 2022 Aardhyn Lavender
