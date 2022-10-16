@@ -12,7 +12,7 @@ import CreateRouter from "./generic";
  *              SUPER_USERs and ADMIN_USERs can update. SUPER_USERs can delete
  */
 
-const submission: CrudInterface<Result> = {
+const result: CrudInterface<Result> = {
   name: "Result",
   model: Prisma.result,
   schema: [],
@@ -36,4 +36,4 @@ const submission: CrudInterface<Result> = {
   },
 };
 
-export default CreateRouter(submission);
+export default CreateRouter(result);
