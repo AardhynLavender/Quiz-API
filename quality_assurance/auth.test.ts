@@ -70,7 +70,9 @@ describe("Authentication", () => {
           .set({ Authorization: `Bearer ${token}` })
           .end((_, res) => {
             AssertStandardResponse(res);
-            chai.expect(res.body.msg).to.equal("User successfully logged out");
+            chai
+              .expect(res.body.msg)
+              .to.equal(`${BasicUser.username} successfully logged out`);
             done();
           });
       })
