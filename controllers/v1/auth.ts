@@ -130,7 +130,7 @@ const Logout = async (req: UserRequest, res: Response) => {
     await RevokeSession(id);
 
     return res.status(Code.SUCCESS).json({
-      msg: "User successfully logged out",
+      msg: `${req.user!.username!} successfully logged out`, // eslint-disable-line @typescript-eslint/no-non-null-assertion
     });
   } catch (err: any) {
     return res.status(Code.ERROR).json({
