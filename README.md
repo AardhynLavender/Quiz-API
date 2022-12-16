@@ -1,8 +1,8 @@
 # Restful API Assignment
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+Typescript quiz API for the *Intermediate Application Development* paper at Otago Polytechnic, awarding a grade of **100%**
 
-## Meta
+## Assignment
 
 ### About
 
@@ -65,9 +65,9 @@ For reference, here's an ERD of the current database
 
 ### Environment
 
-Firstly, you need to setup a database. I use a PostgreSQL instance on a Heroku free tier ( at least, for now... ).
+Firstly, you need to setup a database. I used a PostgreSQL instance on a Heroku free tier ( Rest in peace... )
 
-Create a `new app`, and add **two** `Heroku Postgres` addons -- the free ones will do.
+Create a `new app`, and add **two** `Heroku Postgres` addons -- the free ones will do ( At least, they did... )
 
 You'll need to configure the `DATABASE_URL` and `SHADOW_DATABASE_URL` in your local environment.
 
@@ -123,7 +123,7 @@ From `User`:
 Seed using
 
 ```
-/<table>/seed/[:pool]
+/:table/seed/[:pool]
 ```
 
 You will need to set the hash as your `SEED_GIST_HASH` and the username as the `GITHUB_USERNAME` for the seeding to work. Otherwise, and exception will be thrown.
@@ -189,11 +189,7 @@ For more in-depth testing, use `qa:coverage` to run the test suite with a summat
 
 ### Live Deployment
 
-You can use the API right now by visiting [this site](https://laveat1-quiz-api.herokuapp.com/), or using the following url
-
-```plaintext
-https://laveat1-quiz-api.herokuapp.com/
-```
+> This project no-longer has a live deployemnt
 
 ### Custom Deployment ( Heroku )
 
